@@ -13,10 +13,16 @@ const back = `<svg width="12" height="22" viewBox="0 0 12 22" fill="none" xmlns=
 
 const Verification = ({ navigation }: { navigation: any }) => {
     const [otp, setOtp] = useState('');
+    const [errorMessages, setErrorMessages] = useState({ otp: "" })
     const onChange = (value: string) => setOtp(value);
 
     const handleButton = () => {
-        if (otp.length === 6) {
+        if (otp === "") {
+            setErrorMessages({ ...errorMessages, otp: "OTP is required" })
+            return
+        }
+        else {
+            setErrorMessages({ otp: "" })
             navigation.navigate('user-info')
         }
     }
@@ -44,8 +50,9 @@ const Verification = ({ navigation }: { navigation: any }) => {
 
 
                     <OtpField otpCodeChanged={onChange}/>
+                    { errorMessages.otp !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 10 }}>{errorMessages.otp}</Text>}
 
-                    {/* Login Button */}
+                    {/* Verification Button */}
                     <View style={{ width: '100%', marginTop: 57 }}>
                         <PrimaryButtons text='Verifizieren' onPress={handleButton} />
                     </View>

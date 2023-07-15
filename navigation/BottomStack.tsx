@@ -10,6 +10,7 @@ import { StyleSheet } from 'react-native';
 import { Platform } from 'react-native';
 import { View } from 'react-native';
 import AddButton from '../components/AddButton';
+import DrawerStack from './DrawerStack';
 
 const HomeIcon = ({ focused, color, size }: { focused: boolean, color: string, size: number }) => (
     <View style={{ flexDirection: "column", alignItems: 'center' }}>
@@ -71,6 +72,7 @@ const BottomStack = () => {
                 bottom: 5,
             }}
             screenOptions={{
+                tabBarHideOnKeyboard: true,
                 tabBarStyle: {
                     ...styles.boxShadow,
                     borderTopColor: 'transparent',
@@ -161,6 +163,11 @@ const BottomStack = () => {
                     },
                 }}
             />
+
+            {/* <Tab.Screen
+                name="drawer"
+                component={DrawerStack}
+            /> */}
 
         </Tab.Navigator>
     )

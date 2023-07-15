@@ -13,10 +13,62 @@ const check = `<svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns
 const SignUp = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("")
   const [checked, setChecked] = useState<boolean>(false);
+  const [errorMessages, setErrorMessages] = useState({ email: "", password: "", confirmPassword: "", checked: "" })
 
   const handleRegister = () => {
-    if (checked) {
+    if (email === "") {
+      setErrorMessages({ ...errorMessages, email: "Email is required" })
+      return
+    }
+    if (!email.includes("@") && !email.includes(".com")) {
+      setErrorMessages({ ...errorMessages, email: "Email is invalid" })
+      return
+    }
+    if(password === "") {
+      setErrorMessages({ ...errorMessages, password: "Password is required" , email: "" })
+      setErrorMessages({ ...errorMessages, password: "Password is required" })
+      return
+    }
+    if(password.length < 8) {
+      setErrorMessages({ ...errorMessages, password: "Password must be at least 8 characters", email: "" })
+      return
+    }
+    if(password.length > 20) {
+      setErrorMessages({ ...errorMessages, password: "Password must be less than 20 characters", email: "" })
+      return
+    }
+    if(!password.match(/[a-z]/g)) {
+      setErrorMessages({ ...errorMessages, password: "Password must contain at least one lowercase letter", email: "" })
+      return
+    }
+    if(!password.match(/[A-Z]/g)) {
+      setErrorMessages({ ...errorMessages, password: "Password must contain at least one uppercase letter", email: "" })
+      return
+    }
+    if(!password.match(/[0-9]/g)) {
+      setErrorMessages({ ...errorMessages, password: "Password must contain at least one number", email: "" })
+      return
+    }
+    if(!password.match(/[^a-zA-Z\d]/g)) {
+      setErrorMessages({ ...errorMessages, password: "Password must contain at least one special character", email: "" })
+      return
+    }
+    if(confirmPassword === "") {
+      setErrorMessages({ ...errorMessages, confirmPassword: "Confirm Password is required", email: "", password: ""})
+      return
+    }
+    if(password !== confirmPassword) {
+      setErrorMessages({ ...errorMessages, confirmPassword: "Passwords do not match", email: "", password: "" })
+      return
+    }
+    if(!checked) {
+      setErrorMessages({ ...errorMessages, checked: "Please accept the terms and conditions", email: "", password: "", confirmPassword: "" })
+      return
+    }
+    else {
+      setErrorMessages({ email: "", password: "", confirmPassword: "", checked: "" })
       navigation.navigate('verification')
     }
   }
@@ -37,18 +89,21 @@ const SignUp = ({ navigation }: { navigation: any }) => {
           <View style={{ width: "100%", marginBottom: 28 }}>
             <Text style={styles.label}>Email</Text>
             <EmailInput value={email} onChangeText={setEmail} placeholder={"abc@xyz.com"} />
+            {errorMessages.email !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.email}</Text>}
           </View>
 
           {/* Passwort */}
           <View style={{ width: "100%", marginBottom: 28 }}>
             <Text style={styles.label}>Passwort</Text>
             <PasswordInput value={password} onChangeText={setPassword} placeholder={"********"} />
+            {errorMessages.password !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.password}</Text>}
           </View>
 
-          {/* Passwort */}
+          {/* Passwort wiederholen */}
           <View style={{ width: "100%", marginBottom: 19 }}>
             <Text style={styles.label}>Passwort wiederholen</Text>
-            <PasswordInput value={password} onChangeText={setPassword} placeholder={"********"} />
+            <PasswordInput value={confirmPassword} onChangeText={setConfirmPassword} placeholder={"********"} />
+            {errorMessages.confirmPassword !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.confirmPassword}</Text>}
           </View>
 
           {/* Checkbox */}
@@ -63,7 +118,7 @@ const SignUp = ({ navigation }: { navigation: any }) => {
               <Text style={{ fontSize: 10, fontWeight: "500", color: "#383838" }}>Ich akzeptiere die <Text style={{ fontSize: 10, fontWeight: "700", color: "#383838", textDecorationLine: "underline", textDecorationColor: "#383838" }}>Allgemeinen Geschäftsbedingungen</Text> und erkläre mich der <Text style={{ fontSize: 10, fontWeight: "700", color: "#383838", textDecorationLine: "underline", textDecorationColor: "#383838" }}>Datenschutzerklärung</Text> einverstanden</Text>
             </View>
           </View>
-
+          {errorMessages.checked !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.checked}</Text>}
           {/* Register Button */}
           <View style={{ width: '100%', marginTop: 44 }}>
             <PrimaryButtons text='Registrieren' onPress={handleRegister} />

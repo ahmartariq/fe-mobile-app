@@ -7,7 +7,10 @@ import SignUp from '../Screens/SignUp';
 import Verification from '../Screens/Verification';
 import UserInfo from '../Screens/UserInfo';
 import BottomStack from './BottomStack';
-import ContactDetails from '../Screens/ContactDetails';
+import DrawerStack from './DrawerStack';
+import Templates from '../Screens/Templates';
+import Releases from '../Screens/Releases';
+import Teams from '../Screens/Teams';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,13 +38,14 @@ const MainStack = () => {
                 component={UserInfo}
                 options={{ headerShown: false }} />
 
-            <Stack.Screen name="bottom-tab"
+            {/* <Stack.Screen name="bottom-tab"
                 component={BottomStack}
+                options={{ headerShown: false }} /> */}
+
+            <Stack.Screen name="drawer-stack"
+                component={DrawerStack}
                 options={{ headerShown: false }} />
-                
-            <Stack.Screen name="contact-details"
-                component={ContactDetails}
-                options={{ headerShown: false }} />
+
         </Stack.Navigator>
     );
 }

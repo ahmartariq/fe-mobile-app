@@ -30,10 +30,11 @@ const rocket = `<svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmln
 const UserInfo = ({ navigation }: { navigation: any }) => {
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
+  const [image, setImage] = useState(null);
   const [use, setUse] = useState<number>(1);
+  const [errorMessages, setErrorMessages] = useState({ image: null, firstName: "", lastName: "", use: "" })
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   // 1 for business, 2 for private
-  const [image, setImage] = useState(null);
 
   const pickImage = async () => {
 
@@ -58,7 +59,23 @@ const UserInfo = ({ navigation }: { navigation: any }) => {
   };
 
   const handleButton = () => {
-    navigation.navigate('bottom-tab')
+    if (image === null) {
+      setErrorMessages({ ...errorMessages, image: "Image is required" })
+      return
+    }
+    if (firstName === "") {
+      setErrorMessages({ ...errorMessages, firstName: "First Name is required", image: "" })
+      return
+    }
+    if (lastName === "") {
+      setErrorMessages({ ...errorMessages, lastName: "Last Name is required", firstName: "", image: "" })
+      return
+    }
+    else {
+      setErrorMessages({ image: null, firstName: "", lastName: "" })
+      navigation.navigate('drawer-stack')
+    }
+    
   }
 
   return (
@@ -90,18 +107,21 @@ const UserInfo = ({ navigation }: { navigation: any }) => {
                   <Image source={{ uri: image }} style={{ width: 120, height: 120, borderRadius: 100}} />
                 </TouchableOpacity>
             }
+            { errorMessages.image !== null && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.image}</Text>}
           </View>
 
           {/* First Name */}
           <View style={{ width: "100%", marginBottom: 28 }}>
             <Text style={styles.label}>Vorname</Text>
             <TextField value={firstName} onChangeText={setFirstName} placeholder={"John"} />
+            { errorMessages.firstName !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.firstName}</Text>}
           </View>
 
           {/* Second Name */}
           <View style={{ width: "100%", marginBottom: 19 }}>
             <Text style={styles.label}>Nachname</Text>
             <TextField value={lastName} onChangeText={setLastName} placeholder={"Doe"} />
+            { errorMessages.lastName !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.lastName}</Text>}
           </View>
 
           {/* Use */}

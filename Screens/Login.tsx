@@ -6,9 +6,27 @@ import { PrimaryButtons } from '../components/Buttons';
 const Login = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errorMessages, setErrorMessages] = useState({ email: "", password: "" })
+
 
   const handleLogin = () => {
-    navigation.navigate('bottom-tab')
+    if (email === "") {
+      setErrorMessages({ ...errorMessages, email: "Email is required" })
+      return
+    }
+    if(!email.includes("@") && !email.includes(".com")) {
+      setErrorMessages({ ...errorMessages, email: "Email is invalid" })
+      return
+    }
+
+    if (password === "") {
+      setErrorMessages({ ...errorMessages, password: "Password is required", email: "" })
+      return
+    }
+    else {
+      setErrorMessages({ email: "", password: "" })
+      navigation.navigate('drawer-stack')
+    }
   }
 
   return (
@@ -26,12 +44,14 @@ const Login = ({ navigation }: { navigation: any }) => {
           <View style={{ width: "100%", marginBottom: 28 }}>
             <Text style={styles.label}>Email</Text>
             <EmailInput value={email} onChangeText={setEmail} placeholder={"abc@xyz.com"} />
+            { errorMessages.email !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.email}</Text>}
           </View>
 
           {/* Passwort */}
           <View style={{ width: "100%", marginBottom: 12 }}>
             <Text style={styles.label}>Passwort</Text>
             <PasswordInput value={password} onChangeText={setPassword} placeholder={"********"} />
+            { errorMessages.password !== "" && <Text style={{ color: "#FF0000", fontSize: 12, marginTop: 5 }}>{errorMessages.password}</Text>}
           </View>
 
           {/* Passwort vergessen? */}

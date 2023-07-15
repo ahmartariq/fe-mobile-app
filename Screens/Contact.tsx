@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Text,
   View,
   StyleSheet,
   Image,
-  TextInput,
   TouchableOpacity,
   ScrollView,
+  Modal,
+  Pressable,
+  PanResponder,
+  Platform
 } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from 'expo-linear-gradient';
+import { TextInput } from 'react-native-paper';
 import { SvgXml } from 'react-native-svg';
+import ContactModal from '../components/ContactModal';
+import { KeyboardAvoidingView } from 'react-native';
 
 const bell = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M10 5.3667V8.1417" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"/>
@@ -57,9 +63,25 @@ const colorCombinations = [
   ['#F7A13C', '#34DCFC'],
 ];
 
+const infoData = {
+  telefon: "+ 43 176459709",
+  email: "",
+  geburtstag: "12.02.2001",
+  wohnort: "",
+  beruf: "",
+  unternehmen: "netsome GmbH",
+  beziehungsebene: "Ebene 2",
+  verbindungsperson: "Peter Singh",
+  kreis: "",
+}
+
 const Contact = ({ navigation }: { navigation: any }) => {
   const [search, setSearch] = useState("")
   const [filteredData, setFilteredData] = useState<Data[]>([]);
+  const [contactModel, setContactModel] = useState(false);
+
+  const [data, setData] = useState({ startColor: "", endColor: "", name: "", email: "" });
+
 
   const sortedArray = dataArray.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -94,212 +116,257 @@ const Contact = ({ navigation }: { navigation: any }) => {
     handleSearch(search);
   }, [search]);
 
+  const createLetter = (name: string) => {
+    const namesArray = name.split(' ');
+    const firstName = namesArray[0] || '';
+    const lastName = namesArray[1] || '';
+    return (firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase());
+  };
 
-  return (
-    <View style={styles.container}>
-      <LinearGradient colors={['#67C0F7', '#4163F7']} style={styles.header}>
-        <Image
-          source={require('../assets/lines.png')}
-          style={{ width: '100%', position: 'absolute', top: 0 }}
-          resizeMode={'cover'}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginLeft: '50%',
-            transform: [{ translateX: -50 }],
-            marginBottom: 22,
-          }}>
-          <Text style={styles.headerTitle}>Kontakte</Text>
-          <SvgXml xml={bell} style={{ marginRight: 22 }} />
+
+    return (
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <LinearGradient colors={['#67C0F7', '#4163F7']} style={styles.header}>
+          <Image
+            source={require('../assets/lines.png')}
+            style={{ width: '100%', position: 'absolute', top: 0 }}
+            resizeMode={'cover'}
+          />
           <View
             style={{
-              width: 44,
-              height: 44,
-              overflow: 'hidden',
-              borderRadius: 100,
+              flexDirection: 'row',
+              alignItems: 'center',
+              // marginLeft: '50%',
+              // transform: [{ translateX: -50 }],
+              marginBottom: 22,
+              justifyContent: 'flex-end',
+              paddingHorizontal: 24,
             }}>
-            <Image
-              source={require('../assets/profile.png')}
-              style={{ aspectRatio: 1, width: '100%', height: '100%' }}
+            <Text style={styles.headerTitle}>Kontakte</Text>
+            <SvgXml xml={bell} style={{ marginRight: 22 }} />
+            <View
+              style={{
+                width: 44,
+                height: 44,
+                overflow: 'hidden',
+                borderRadius: 100,
+              }}>
+              <Image
+                source={require('../assets/profile.png')}
+                style={{ aspectRatio: 1, width: '100%', height: '100%' }}
+              />
+            </View>
+          </View>
+        </LinearGradient>
+
+        <View style={styles.body}>
+          <View style={{ width: '85%' }}>
+            <TextInput
+              style={{ backgroundColor: '#ffffff' }}
+              theme={{ roundness: 9 }}
+              label=""
+              placeholder={"Suchen"}
+              value={search}
+              activeOutlineColor='none'
+              outlineColor='#949F99'
+              mode='outlined'
+              onChangeText={setSearch}
+              left={
+                <TextInput.Icon
+                  icon={() => (
+                    <SvgXml xml={searchIcon} width={18} height={18} style={{ alignSelf: 'center' }} />
+                  )}
+                />
+              }
+              right={
+                <TextInput.Icon style={{
+                  backgroundColor: '#ECEFFE',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 12,
+                }}
+                  icon={() => (
+                    <SvgXml xml={filter} width={18} height={18} style={{ alignSelf: 'center' }} />
+                  )}
+                />
+              }
             />
           </View>
-        </View>
-      </LinearGradient>
 
-      <View style={styles.body}>
-        <View style={{ width: '85%' }}>
-          <View style={styles.search}>
-            <View style={{ flexDirection: 'row' }}>
-              <SvgXml xml={searchIcon} style={{ marginRight: 10 }} />
-              <TextInput value={search} onChangeText={setSearch} placeholder={'Suchen'} style={{ width: '67%' }} />
-            </View>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={{
-                backgroundColor: '#ECEFFE',
-                padding: 13,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 12,
-              }}>
-              <SvgXml xml={filter} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={{
+              width: 43,
+              height: 43,
+              borderRadius: 100,
+              backgroundColor: '#EBEEFE',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginLeft: 16,
+            }}>
+            <SvgXml xml={sort} />
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.5}
+        <ScrollView
           style={{
-            width: 43,
-            height: 43,
-            borderRadius: 100,
-            backgroundColor: '#EBEEFE',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginLeft: 16,
+            paddingHorizontal: 24,
+            marginTop: 24,
+            flexDirection: 'column',
           }}>
-          <SvgXml xml={sort} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView
-        style={{
-          paddingHorizontal: 24,
-          marginTop: 32,
-          flexDirection: 'column',
-        }}>
-        {
-          search === "" && mappedData.map(({ letter, contacts }) => (
-            <View key={letter}>
-              <View style={styles.label}>
-                <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
-                  {letter}
-                </Text>
-              </View>
-              {contacts.map(({ name, email }) => {
-                const [startColor, endColor] = getRandomColors();
-                return (
-                  <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate("contact-details", {startColor, endColor, name, email})} key={name} style={styles.card}>
-                    <LinearGradient
-                      style={styles.gradient}
-                      colors={[startColor, endColor]}
-                    />
-                    <View style={{ marginLeft: 20 }}>
-                      <Text style={{ fontSize: 16, fontWeight: '500' }}>
-                        {name}
-                      </Text>
-                      <Text
-                        style={{
-                          marginTop: 4,
-                          fontSize: 12,
-                          fontWeight: '400',
-                          color: '#545454',
-                        }}>
-                        {email}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
-
-        {
-          search !== "" &&
-          filteredData.map(({ name, email }) => {
-            const [startColor, endColor] = getRandomColors();
-            return (
-              <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate("contact-details", {startColor, endColor, name, email})} key={name} style={styles.card}>
-                <LinearGradient
-                  style={styles.gradient}
-                  colors={[startColor, endColor]}
-                />
-                <View style={{ marginLeft: 20 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '500' }}>
-                    {name}
-                  </Text>
-                  <Text
-                    style={{
-                      marginTop: 4,
-                      fontSize: 12,
-                      fontWeight: '400',
-                      color: '#545454',
-                    }}>
-                    {email}
+          {
+            search === "" && mappedData.map(({ letter, contacts }) => (
+              <View key={letter}>
+                <View style={styles.label}>
+                  <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
+                    {letter}
                   </Text>
                 </View>
-              </TouchableOpacity>
-            );
-          })}
-      </ScrollView>
-    </View>
-  );
-};
+                {contacts.map(({ name, email }) => {
+                  const [startColor, endColor] = getRandomColors();
+                  return (
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      // onPress={() => navigation.navigate("contact-details", { startColor, endColor, name, email })}
+                      onPress={() => {
+                        setData({ startColor, endColor, name, email })
+                        setContactModel(true)
+                      }}
+                      key={name}
+                      style={styles.card}>
+                      <LinearGradient
+                        style={styles.gradient}
+                        colors={[startColor, endColor]}
+                      >
+                        {/* showing letter */}
+                        <Text style={{ color: '#202020', fontSize: 16, fontWeight: '600' }}>
+                          {createLetter(name)}
+                        </Text>
+                      </LinearGradient>
+                      <View style={{ marginLeft: 20 }}>
+                        <Text style={{ fontSize: 16, fontWeight: '500' }}>
+                          {name}
+                        </Text>
+                        <Text
+                          style={{
+                            marginTop: 4,
+                            fontSize: 12,
+                            fontWeight: '400',
+                            color: '#545454',
+                          }}>
+                          {email}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ))}
 
-export default Contact;
+          {
+            search !== "" &&
+            filteredData.map(({ name, email }) => {
+              const [startColor, endColor] = getRandomColors();
+              return (
+                <TouchableOpacity activeOpacity={0.5} onPress={() => setContactModel(true)} key={name} style={styles.card}>
+                  <LinearGradient
+                    style={styles.gradient}
+                    colors={[startColor, endColor]}
+                  >
+                    {/* showing letter */}
+                    <Text style={{ color: '#202020', fontSize: 16, fontWeight: '600' }}>
+                      {createLetter(name)}
+                    </Text>
+                  </LinearGradient>
+                  <View style={{ marginLeft: 20 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '500' }}>
+                      {name}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 4,
+                        fontSize: 12,
+                        fontWeight: '400',
+                        color: '#545454',
+                      }}>
+                      {email}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+        </ScrollView>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    overflow: 'hidden',
-    backgroundColor: 'white',
-  },
-  header: {
-    height: '18%',
-    position: 'relative',
-    justifyContent: 'flex-end',
-  },
-  headerTitle: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'white',
-    marginRight: 45,
-  },
-  body: {
-    paddingHorizontal: 24,
-    width: '100%',
-    marginTop: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  search: {
-    outline: 'none',
-    width: '100%',
-    borderColor: '#E4E0E0',
-    borderWidth: 1,
-    height: 50,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 13,
-    paddingRight: 5,
-    flexDirection: 'row',
-  },
-  label: {
-    width: 21,
-    height: 21,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#4675F7',
-    borderRadius: 6,
-    marginBottom: 12
-  },
-  card: {
-    flexDirection: 'row',
-    width: '100%',
-    marginBottom: 20,
-  },
-  gradient: {
-    width: 46,
-    height: 46,
-    borderRadius: 100,
-  },
-});
+        <ContactModal contactModel={contactModel} setContactModel={setContactModel} data={data} infoData={infoData} />
+      </KeyboardAvoidingView>
+    );
+  };
+
+  export default Contact;
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      overflow: 'hidden',
+      backgroundColor: '#FDFDFF',
+    },
+    header: {
+      height: '18%',
+      position: 'relative',
+      justifyContent: 'flex-end',
+    },
+    headerTitle: {
+      textAlign: 'center',
+      fontSize: 20,
+      fontWeight: '600',
+      color: 'white',
+      marginRight: 45,
+    },
+    body: {
+      paddingHorizontal: 24,
+      width: '100%',
+      marginTop: 16,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    search: {
+      outline: 'none',
+      width: '100%',
+      borderColor: '#E4E0E0',
+      borderWidth: 1,
+      height: 50,
+      backgroundColor: 'white',
+      borderRadius: 12,
+      color: 'black',
+      fontSize: 16,
+      fontWeight: 'bold',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingLeft: 13,
+      paddingRight: 5,
+      flexDirection: 'row',
+    },
+    label: {
+      width: 21,
+      height: 21,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#4675F7',
+      borderRadius: 6,
+      marginBottom: 12
+    },
+    card: {
+      flexDirection: 'row',
+      width: '100%',
+      marginBottom: 20,
+    },
+    gradient: {
+      width: 46,
+      height: 46,
+      borderRadius: 100,
+      justifyContent: 'center',
+      alignItems: 'center',
+      
+    },
+  });

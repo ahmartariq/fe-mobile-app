@@ -15,7 +15,7 @@ export const EmailInput = ({ placeholder, value, onChangeText }: { placeholder: 
             mode='outlined'
             right={<TextInput.Icon
                 color={"#383838"}
-                icon={value.toLocaleLowerCase() === "test@gmail.com" ? "check" : value !== "" && value.includes("@") && value.includes(".com") ? "close" : ""}
+                icon={value !== "" && value.includes("@") && value.includes(".com") ? "check" :  "" }
             />}
             onChangeText={onChangeText}
         />
