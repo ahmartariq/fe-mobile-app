@@ -53,7 +53,7 @@ const AddButton = () => {
 
     return (
         <>
-            <TouchableOpacity activeOpacity={0.5} onLongPress={handleLog} style={styles.container}>
+            <TouchableOpacity activeOpacity={1} onPress={handleLog} style={styles.container}>
                 <SvgXml xml={isPopup ? closeIcon : add} />
             </TouchableOpacity>
 
@@ -63,28 +63,36 @@ const AddButton = () => {
                 <View style={{ width: 267, height: 257, backgroundColor: '#fff', borderRadius: 20, alignItems: 'center', position: 'absolute' , bottom: 40 }}>
                     <SvgXml xml={point} style={styles.point}/>
                     <View style={{ width: "100%" , flexDirection: 'column' , paddingHorizontal: 26, paddingVertical: 24}}>
-                        <TouchableOpacity onPress={() => setContactModal(true)} style={{width: "100%" , flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity onPress={() => {setContactModal(true)
+                        setIsPopup(false)
+                        }} style={{width: "100%" , flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ marginRight: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' , width: 44, height: 44, backgroundColor: "#CCF2E8" , borderRadius: 100 }}>
                                 <SvgXml xml={person} />
                             </View>
                             <Text style={{ color: "black", fontSize: 16, fontWeight: '500', marginLeft: 8 }}>Kontakt</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setActivityModal(true)} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
+                        <TouchableOpacity onPress={() => {setActivityModal(true)
+                        setIsPopup(false)
+                        }} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                             <View style={{ marginRight: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' , width: 44, height: 44, backgroundColor: "#D8DEFD" , borderRadius: 100 }}>
                                 <SvgXml xml={activityIcon} />
                             </View>
                             <Text style={{ color: "black", fontSize: 16, fontWeight: '500', marginLeft: 8 }}>Aktivität</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setMemoryModal(true)} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
+                        <TouchableOpacity onPress={() => {setMemoryModal(true)
+                        setIsPopup(false)
+                        }} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                             <View style={{ marginRight: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' , width: 44, height: 44, backgroundColor: "#FFE1CC" , borderRadius: 100 }}>
                                 <Image source={require('../assets/memory.png')} resizeMode='contain' style={{width: 24, height: 24}}/>
                             </View>
                             <Text style={{ color: "black", fontSize: 16, fontWeight: '500', marginLeft: 8 }}>erinnerung</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => setAlertModal(true)} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
+                        <TouchableOpacity onPress={() => {setAlertModal(true)
+                        setIsPopup(false)
+                        }} style={{width: "100%" , flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
                             <View style={{ marginRight: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' , width: 44, height: 44, backgroundColor: "#CFF7FF" , borderRadius: 100 }}>
                                 <Image source={require('../assets/alert.png')} resizeMode='contain' style={{width: 24, height: 24}}/>
                             </View>

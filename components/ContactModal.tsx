@@ -5,6 +5,9 @@ import { SvgXml } from 'react-native-svg';
 import ActivityDetailModal from './ActivityDetailModal';
 import ReminderDetailModal from './ReminderDetailModal';
 import ApproachDetailModal from './ApproachDetailModal';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +39,18 @@ const caalender = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" x
 <path d="M7.99697 11.1332H8.00296" stroke="#3B3C3E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5.52956 9.1332H5.53555" stroke="#3B3C3E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5.52956 11.1332H5.53555" stroke="#3B3C3E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`
+const calenderBlue = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.99982 1.49994V3.74994" stroke="#4675F7" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.0002 1.49994V3.74994" stroke="#4675F7" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.62483 6.81744H15.3748" stroke="#4675F7" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.75 6.37494V12.7499C15.75 14.9999 14.625 16.4999 12 16.4999H6C3.375 16.4999 2.25 14.9999 2.25 12.7499V6.37494C2.25 4.12494 3.375 2.62494 6 2.62494H12C14.625 2.62494 15.75 4.12494 15.75 6.37494Z" stroke="#4675F7" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.7711 10.2748H11.7778" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.7711 12.5248H11.7778" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.99657 10.2748H9.0033" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.99657 12.5248H9.0033" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.22078 10.2748H6.22752" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.22078 12.5248H6.22752" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`
 
 const clock = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -115,6 +130,7 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
     const [letter, setLetter] = useState('');
     const [selected, setSelected] = useState(0);
     const [info, setInfo] = useState(infoData);
+
     const [editable, setEditable] = useState(false);
     const [activityModal, setActivityModal] = useState(false);
     const [activityData, setActivityData] = useState(activity[0]);
@@ -123,7 +139,8 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
     const [approachModal, setApproachModal] = useState(false);
     const [approachData, setApproachData] = useState(approaches[0]);
     const [textWidths, setTextWidths] = useState([]);
-
+    //const [editable, setEditable] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const modalRef = useRef(null);
 
@@ -176,7 +193,9 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
           return updatedWidths;
         });
     }
-
+    const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
 
     return (
         <Modal
@@ -184,15 +203,19 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
             transparent={true}
             visible={contactModel}
             onRequestClose={() => setContactModel(!contactModel)}>
+                
             <View style={styles.centeredView}>
 
                 <View ref={modalRef} style={styles.modalView}>
+
                     {/* Top Line */}
                     <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
 
+
+
                     {/* Edit Option */}
                     {
-                        !editable &&
+                        !editable && selected==0 &&
                         <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
@@ -202,8 +225,8 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
 
                     {/*  editable */}
                     {
-                        editable &&
-                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
+                        editable && selected==0 &&
+                        <View style={{ width: '100%', minHeight: 40, marginBottom:4, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>
@@ -221,8 +244,16 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
                                 <Text style={{ color: 'black', fontSize: 30, fontWeight: '600' }}>{letter}</Text>
                             </LinearGradient>
                             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-                                <Text style={{ color: '#1F1F1F', fontSize: 16, fontWeight: '600', marginLeft: 21 }}>{data.name}</Text>
-                                <Text style={{ color: '#545454', fontSize: 14, fontWeight: '400', marginLeft: 21, marginTop: 4 }}>{data.email}</Text>
+                                {!editable?<Text style={{ color: '#1F1F1F', fontSize: 16, fontWeight: '600', marginLeft: 21 }}>{data.name}</Text>:
+                                <TextInput 
+                                style={{ color: '#1F1F1F', fontSize: 16, fontWeight: '600', marginLeft: 21, width:120}}
+                                value={info.name}  placeholder={data.name}
+                                placeholderTextColor="#1F1F1F"
+                                onChangeText={(text) => setInfo({ ...info, name: text })}
+                                editable={editable}
+/>
+                                }
+                                <Text style={{ color: '#545454', fontSize: 14, fontWeight: '400', marginLeft: 21, marginTop: 4 }}>{info.email == ""? data.email : info.email}</Text>
                             </View>
                         </View>
 
@@ -246,7 +277,8 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
                         </View>
 
                         {/* SubCategory */}
-                        <View style={{ width: '100%', height: 50, flexDirection: "row", borderWidth: 1, borderColor: "#E7EBF4", backgroundColor: "#FFFFFF", borderRadius: 12 }}>
+                        {!editable &&
+                        <View style={{ width: '100%', height: 50, flexDirection: "row", alignItems:'center',justifyContent:'space-between',borderWidth: 1, borderColor: "#E7EBF4", backgroundColor: "#FFFFFF", borderRadius: 12 }}>
                             {
                                 subCategories.map((item, index) => (
                                     <TouchableOpacity
@@ -254,12 +286,12 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
                                         onPress={() => { setSelected(index) }}
                                         key={index}
                                         style={{ flex: 1 ,  justifyContent: 'center', alignItems: "center", flexDirection: "column", }}>
-                                        <Text onLayout={(event) => handleTextLayout(index, event)} style={{ color: selected === index ? '#4675F7' : "#545454", fontSize: 12, fontWeight: '600' }}>{item}</Text>
+                                        <Text onLayout={(event) => handleTextLayout(index, event)} style={{ color: selected === index ? '#4675F7' : "#545454", fontSize: 12, fontWeight: '600', marginTop: selected===index? 3:0 }}>{item}</Text>
                                         {selected === index && <View style={{width: textWidths[index] , height: 3, borderRadius: 12, backgroundColor: "#4675F7"}}></View>}
                                     </TouchableOpacity>
                                 ))
                             }
-                        </View>
+                        </View>}
 
                     </View>
 
@@ -300,18 +332,55 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
 
                                 <View style={{ flexDirection: "column", marginBottom: 22 }}>
                                     <Text style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500' }}>Allgemein</Text>
-                                    {editable || info.geburtstag !== "" ? <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: "#C9C9C9", }}>
-                                        <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>Geburtstag</Text>
-                                        <TextInput
-                                            style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500', textAlign: 'right' }}
-                                            placeholder="Geburtstag"
-                                            placeholderTextColor="#D0D0D0"
-                                            value={info.geburtstag}
-                                            onChangeText={(text) => setInfo({ ...info, geburtstag: text })}
-                                            editable={editable}
+                                    {editable || info.geburtstag !== '' ? (
+                                    <View
+                                    style={{
+                                        width: '100%',
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        marginTop: 10,
+                                        paddingBottom: 10,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: '#C9C9C9',
+                                    }}
+                                    >
+                                    <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>
+                                        Geburtstag
+                                    </Text>
+                                    {editable ? (
+                                        <TouchableOpacity
+                                        style={{
+                                            color: '#1F1F1F',
+                                            fontSize: 14,
+                                            fontWeight: '500',
+                                            textAlign: 'right',
+                                        }}
+                                        onPress={() => setShowDatePicker(true)}
+                                        >
+                                        <Text style={{ fontSize: 14,
+                                            fontWeight: '500', }}>
+                                            {`${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear()}`}
+                                        </Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <Text style={{ fontSize: 14, fontWeight: '500', }}>
+                                        {`${date.getMonth() + 1}.${date.getDate()}.${date.getFullYear()}`}
+                                        </Text>
+                                    )}
+                                    {showDatePicker && (
+                                        <DateTimePicker
+                                        value={date}
+                                        mode="date"
+                                        display="default"
+                                        onChange={(event, selectedDate) => {
+                                            const currentDate = selectedDate || date;
+                                            setShowDatePicker(Platform.OS === 'ios');
+                                            setDate(currentDate);
+                                        }}
                                         />
+                                    )}
                                     </View>
-                                        : null}
+                                ) : null}
                                     {editable || info.wohnort !== "" ? <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: "#C9C9C9", }}>
                                         <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>Wohnort</Text>
                                         <TextInput
@@ -356,7 +425,7 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
                                         : null}
                                 </View>
 
-                                <View style={{ flexDirection: "column", marginBottom: 22 }}>
+                                {/* <View style={{ flexDirection: "column", marginBottom: 22 }}>
                                     <Text style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500' }}>Beziehung</Text>
                                     {editable || info.beziehungsebene !== "" ? <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: "#C9C9C9", }}>
                                         <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>Beziehungsebene</Text>
@@ -369,7 +438,63 @@ const ContactModal = ({ contactModel, setContactModel, data, infoData }: { conta
                                             editable={editable}
                                         />
                                     </View>
-                                        : null}
+                                        : null} */}
+<View style={{ flexDirection: 'column', marginBottom: 22 }}>
+  <Text style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500' }}>Beziehung</Text>
+  {editable || info.beziehungsebene !== '' ? (
+    <View
+      style={{
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        paddingBottom: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#C9C9C9',
+      }}
+    >
+      <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>
+        Beziehungsebene
+      </Text>
+      {editable ? (
+        <DropDownPicker
+          items={[
+            { label: `${info.beziehungsebene}`, value: `${info.beziehungsebene}` },
+            { label: 'Option 2', value: 'option2' },
+            { label: 'Option 3', value: 'option3' },
+            { label: 'Option 4', value: 'option4' },
+          ]}
+          value={info.beziehungsebene}
+          onChangeItem={(item:any) => setInfo({ ...info, beziehungsebene: item.value })}
+          style={{
+            backgroundColor: 'transparent',
+            paddingVertical: 4,
+            paddingHorizontal: 8,
+            borderWidth: 0,
+            width: 120,
+            alignSelf: 'flex-end',
+            paddingBottom: 40,
+          }}
+          containerStyle={{ flex: 1, height: 10 }}
+          dropDownStyle={{ backgroundColor: "#FDFDFD", borderColor: "#d9dedb", borderRadius: 9, borderWidth: 1, zIndex: 1000000,}}
+          labelStyle={{ fontSize: 14, fontWeight: '500', color: '#1F1F1F' }}
+          arrowIconStyle={{ tintColor: '#545454', height:20  }}
+          placeholder="Select an option"
+          open={isPickerOpen}
+          setOpen={setIsPickerOpen}
+          textStyle={{ fontSize: 15, fontWeight: "500", color: "#1F1F1F" }}
+          listMode="SCROLLVIEW"
+          scrollViewProps={{
+          nestedScrollEnabled: true,
+        }}
+        />
+      ) : (
+        <Text style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500', textAlign: 'right' }}>
+          {info.beziehungsebene}
+        </Text>
+      )}
+    </View>
+  ) : null}               
                                     {editable || info.verbindungsperson !== "" ? <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: "#C9C9C9", }}>
                                         <Text style={{ color: '#545454', fontSize: 12, fontWeight: '400' }}>Verbindungsperson</Text>
                                         <TextInput

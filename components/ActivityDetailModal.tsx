@@ -93,7 +93,7 @@ const bar = `<svg width="236" height="25" viewBox="0 0 236 25" fill="none" xmlns
 </svg>`
 
 const closeIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M18.6281 3.82422C19.3442 3.0918 19.3442 1.90234 18.6281 1.16992C17.9119 0.4375 16.7489 0.4375 16.0328 1.16992L9.99994 7.3457L3.9614 1.17578C3.24526 0.443359 2.08223 0.443359 1.36609 1.17578C0.649943 1.9082 0.649943 3.09766 1.36609 3.83008L7.40463 10L1.37182 16.1758C0.655672 16.9082 0.655672 18.0977 1.37182 18.8301C2.08796 19.5625 3.25098 19.5625 3.96713 18.8301L9.99994 12.6543L16.0385 18.8242C16.7546 19.5566 17.9177 19.5566 18.6338 18.8242C19.3499 18.0918 19.3499 16.9023 18.6338 16.1699L12.5953 10L18.6281 3.82422Z" fill="#E3E6E4"/>
+<path d="M18.6281 3.82422C19.3442 3.0918 19.3442 1.90234 18.6281 1.16992C17.9119 0.4375 16.7489 0.4375 16.0328 1.16992L9.99994 7.3457L3.9614 1.17578C3.24526 0.443359 2.08223 0.443359 1.36609 1.17578C0.649943 1.9082 0.649943 3.09766 1.36609 3.83008L7.40463 10L1.37182 16.1758C0.655672 16.9082 0.655672 18.0977 1.37182 18.8301C2.08796 19.5625 3.25098 19.5625 3.96713 18.8301L9.99994 12.6543L16.0385 18.8242C16.7546 19.5566 17.9177 19.5566 18.6338 18.8242C19.3499 18.0918 19.3499 16.9023 18.6338 16.1699L12.5953 10L18.6281 3.82422Z" fill="#bec2bf"/>
 </svg>`
 
 const deleteIcon = `<svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -132,7 +132,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
         }
         else{
             setDate(new Date(data.date))
-            setEditable(true)
+            setEditable(false)
         }
         setType(data.type)
         setTitle(data.title)
@@ -290,7 +290,6 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
     const deleteActivity = () => {
         setModal(false)
     }
-
     return (
         <Modal
             animationType="slide"
@@ -304,8 +303,9 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
 
                     {/* Edit Option */}
+                    {/* Edit Option */}
                     {
-                        !editable &&
+                        !editable && 
                         <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
@@ -315,8 +315,8 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
 
                     {/*  editable */}
                     {
-                        editable &&
-                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
+                        editable && 
+                        <View style={{ width: '100%', minHeight: 40, marginBottom:4, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>
@@ -339,8 +339,8 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                                 setValue={setType}
                                 setItems={setItems}
                                 disabled={editable ? false : true}
-                                style={{ backgroundColor: "#FDFDFD", borderColor: "#949F99", borderRadius: 9, borderWidth: 1, marginTop: 7 }}
-                                dropDownContainerStyle={{ backgroundColor: "#FDFDFD", borderColor: "#949F99", borderRadius: 9, borderWidth: 1, zIndex: 1000000 }}
+                                style={{ backgroundColor: "#FDFDFD", borderColor: "#d9dedb", borderRadius: 9, borderWidth: 1, marginTop: 7 }}
+                                dropDownContainerStyle={{ backgroundColor: "#FDFDFD", borderColor: "#d9dedb", borderRadius: 9, borderWidth: 1, zIndex: 1000000 }}
                                 textStyle={{ fontSize: 15, fontWeight: "500", color: "#1F1F1F" }}
                                 arrowIconStyle={{ tintColor: "#4675F7" }}
                                 listMode="SCROLLVIEW"
@@ -360,7 +360,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                                 placeholder={"Enter Title"}
                                 value={title}
                                 activeOutlineColor='none'
-                                outlineColor='#949F99'
+                                outlineColor='#d9dedb'
                                 mode='outlined'
                                 editable={editable}
                                 onChangeText={setTitle}
@@ -391,7 +391,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                                             placeholder={"Select Date"}
                                             value={`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
                                             activeOutlineColor='none'
-                                            outlineColor='#949F99'
+                                            outlineColor='#d9dedb'
                                             mode='outlined'
                                             editable={false}
                                             right={
@@ -412,7 +412,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                                         placeholder={"Select Date"}
                                         value={`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
                                         activeOutlineColor='none'
-                                        outlineColor='#949F99'
+                                        outlineColor='#d9dedb'
                                         mode='outlined'
                                         onPressIn={editable ? showDatepicker : null}
                                         editable={false}
@@ -441,7 +441,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                                 placeholder={"Enter Description"}
                                 value={description}
                                 activeOutlineColor='none'
-                                outlineColor='#949F99'
+                                outlineColor='#d9dedb'
                                 mode='outlined'
                                 editable={editable}
                                 onChangeText={setDescription}
@@ -456,7 +456,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         </View>
                         {recordings.map((recording, index) => (
                             <View style={{ width: "100%", flexDirection: 'row', marginTop: 8 }}>
-                                <View style={{ width: "90%", height: 45, borderWidth: 1, borderColor: "#949F99", borderRadius: 9, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6 }}>
+                                <View style={{ width: "90%", height: 45, borderWidth: 1, borderColor: "#d9dedb", borderRadius: 9, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6 }}>
                                     <TouchableOpacity
                                         onPress={() => handlePlay(index, recording)}
                                         activeOpacity={0.5}>
@@ -489,7 +489,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         {
                             editable && 
                             <TouchableOpacity
-                            style={{ width: "50%", borderWidth:1, borderColor: "#FF8181",flexDirection: "row", height: 54, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}
+                            style={{ width: "50%", borderWidth:1, borderColor: "#d9dedb",flexDirection: "row", height: 54, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}
                             onPress={deleteActivity}
                             accessibilityLabel="Learn more about this purple button">
                             <SvgXml xml={deleteIcon} width={15} height={18} />

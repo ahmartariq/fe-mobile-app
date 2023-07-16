@@ -9,7 +9,7 @@ import {
   Modal,
   Pressable,
   PanResponder,
-  Platform
+  Platform, Keyboard
 } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -123,7 +123,12 @@ const Contact = ({ navigation }: { navigation: any }) => {
     return (firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase());
   };
 
-
+  const handleFilterPress = () => {
+    // Handle filter button press
+   // Keyboard.dismiss(); // Dismiss the keyboard
+    // Add your navigation logic here to open the filter menu
+    // ...
+  };
     return (
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
         <LinearGradient colors={['#67C0F7', '#4163F7']} style={styles.header}>
@@ -188,6 +193,8 @@ const Contact = ({ navigation }: { navigation: any }) => {
                   icon={() => (
                     <SvgXml xml={filter} width={18} height={18} style={{ alignSelf: 'center' }} />
                   )}
+                              onPress={handleFilterPress}
+
                 />
               }
             />
@@ -202,7 +209,7 @@ const Contact = ({ navigation }: { navigation: any }) => {
               backgroundColor: '#EBEEFE',
               justifyContent: 'center',
               alignItems: 'center',
-              marginLeft: 16,
+              marginLeft: 10,
             }}>
             <SvgXml xml={sort} />
           </TouchableOpacity>
@@ -317,6 +324,8 @@ const Contact = ({ navigation }: { navigation: any }) => {
     },
     headerTitle: {
       textAlign: 'center',
+      justifyContent:'center',
+      alignItems:'center',
       fontSize: 20,
       fontWeight: '600',
       color: 'white',

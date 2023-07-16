@@ -198,6 +198,9 @@ const updatedBarData = barData.map(bar => {
   return bar;
 });
 
+const openDrawer = () => {
+  navigation.openDrawer();
+};
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#67C0F7', '#4163F7']} style={styles.header}>
@@ -216,20 +219,22 @@ const updatedBarData = barData.map(bar => {
             justifyContent: 'flex-end',
             paddingHorizontal: 24,
           }}>
-          <Text style={styles.headerTitle}>Kontakte</Text>
+          <Text style={styles.headerTitle}>Home</Text>
           <SvgXml xml={bell} style={{ marginRight: 22 }} />
-          <View
+          
+          <TouchableOpacity
             style={{
               width: 44,
               height: 44,
               overflow: 'hidden',
               borderRadius: 100,
-            }}>
+            }}
+            onPress={openDrawer}>
             <Image
               source={require('../assets/profile.png')}
               style={{ aspectRatio: 1, width: '100%', height: '100%' }}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
 
@@ -399,11 +404,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   headerTitle: {
-    textAlign: 'center',
+    textAlign:'center',
+    alignItems:'center',
+    justifyContent:'center',
     fontSize: 20,
     fontWeight: '600',
     color: 'white',
-    marginRight: 45,
+    marginRight: 60,
   },
   body: {
     paddingHorizontal: 15,

@@ -13,7 +13,8 @@ function DrawerStack() {
   return (
     <Drawer.Navigator initialRouteName='bottom-tab' screenOptions={{ drawerPosition: 'right', drawerType: "front", }} drawerContent={props => <CustomSidebarMenu {...props} />}>
       <Drawer.Screen name="bottom-tab" component={BottomStack}
-        options={{ headerShown: false, drawerLabel: () => null, drawerActiveBackgroundColor: "transparent" }} />
+        options={{ headerShown: false, drawerLabel: () => null, drawerActiveBackgroundColor: "transparent", swipeEnabled: false, }} 
+        />
         <Drawer.Screen
           name="template"
           options={{headerShown: false}}
