@@ -296,9 +296,9 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
             transparent={true}
             visible={modal}
             onRequestClose={() => setModal(!modal)}>
-            <KeyboardAvoidingView behavior='padding' style={styles.centeredView}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.centeredView}>
 
-                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} ref={activityRef} style={styles.modalView}>
+                <View ref={activityRef} style={styles.modalView}>
                     {/* Top Line */}
                     <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
 
@@ -497,7 +497,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         </TouchableOpacity>
                         }
                     </View>
-                </KeyboardAvoidingView>
+                </View>
             </KeyboardAvoidingView>
 
             <IOSDateModal modal={show} setModal={setShow} date={date} setDate={onIOSChange} />
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
             height: 2,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 4,
+        shadrowRadius: 4,
         elevation: 5,
     },
     button: {
