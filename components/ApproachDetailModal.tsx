@@ -247,12 +247,24 @@ const ApproachDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
 
                 <View ref={activityRef} style={styles.modalView}>
                     {/* Top Line */}
-                    <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
+                    <View 
+              {...panResponder.panHandlers}
+          style={{width: "100%", paddingBottom: 30}}>
 
+          <View
+              style={{
+                width: 54,
+                height: 6,
+                backgroundColor: "#D9D9D9",
+                borderRadius: 30,
+                alignSelf: "center",
+              }}
+              ></View>
+              </View>
                     {/* Edit Option */}
                     {
                         !editable &&
-                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 , marginTop:20,                    }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
                             </TouchableOpacity>
@@ -262,7 +274,7 @@ const ApproachDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/*  editable */}
                     {
                         editable &&
-                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', minHeight: 40,marginTop:20, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>
@@ -380,6 +392,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flex: 1,
         justifyContent: 'flex-end',
+        marginTop:10
     },
     modalView: {
         width: '100%',

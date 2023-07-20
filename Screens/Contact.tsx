@@ -122,7 +122,9 @@ const Contact = ({ navigation }: { navigation: any }) => {
     const lastName = namesArray[1] || '';
     return (firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase());
   };
-
+  const openDrawer = () => {
+    navigation.openDrawer();
+  };
   const handleFilterPress = () => {
     // Handle filter button press
    // Keyboard.dismiss(); // Dismiss the keyboard
@@ -138,30 +140,53 @@ const Contact = ({ navigation }: { navigation: any }) => {
             resizeMode={'cover'}
           />
           <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            // marginLeft: '50%',
+            // transform: [{ translateX: -50 }],
+            marginBottom: 22,
+            justifyContent: 'space-between',
+            paddingHorizontal: 24,
+            
+          }}>
+<View style={{flexDirection:'row', alignItems:'center', opacity: 0}}>
+<View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              // marginLeft: '50%',
-              // transform: [{ translateX: -50 }],
-              marginBottom: 22,
-              justifyContent: 'flex-end',
-              paddingHorizontal: 24,
-            }}>
-            <Text style={styles.headerTitle}>Kontakte</Text>
-            <SvgXml xml={bell} style={{ marginRight: 22 }} />
-            <View
-              style={{
-                width: 44,
-                height: 44,
-                overflow: 'hidden',
-                borderRadius: 100,
-              }}>
-              <Image
-                source={require('../assets/profile.png')}
-                style={{ aspectRatio: 1, width: '100%', height: '100%' }}
-              />
-            </View>
+              width: 44,
+              height: 44,
+              overflow: 'hidden',
+              borderRadius: 100,
+            }}
+            >
+            <Image
+              source={require('../assets/profile.png')}
+              style={{ aspectRatio: 1, width: '100%', height: '100%' }}
+            />
           </View>
+          <SvgXml xml={bell} style={{ marginLeft:22 }} />
+
+</View>
+          <Text style={styles.headerTitle}>Kontakte</Text>
+          
+          <View style={{flexDirection:'row', alignItems:'center'}}>
+          <SvgXml xml={bell} style={{ marginRight: 22 }} />
+          
+          <TouchableOpacity
+            style={{
+              width: 44,
+              height: 44,
+              overflow: 'hidden',
+              borderRadius: 100,
+            }}
+            onPress={openDrawer}>
+            <Image
+              source={require('../assets/profile.png')}
+              style={{ aspectRatio: 1, width: '100%', height: '100%' }}
+            />
+          </TouchableOpacity>
+          </View>
+        </View>
         </LinearGradient>
 
         <View style={styles.body}>
@@ -329,7 +354,6 @@ const Contact = ({ navigation }: { navigation: any }) => {
       fontSize: 20,
       fontWeight: '600',
       color: 'white',
-      marginRight: 45,
     },
     body: {
       paddingHorizontal: 24,

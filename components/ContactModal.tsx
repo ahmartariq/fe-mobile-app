@@ -308,9 +308,11 @@ const ContactModal = ({
       <View style={styles.centeredView}>
         <View ref={modalRef} style={styles.modalView}>
           {/* Top Line */}
+          <View 
+              {...panResponder.panHandlers}
+          style={{width: "100%", paddingBottom: 30}}>
 
-          <ScrollView style={{ width: "100%", height: "100%" }}>
-            <View
+          <View
               style={{
                 width: 54,
                 height: 6,
@@ -318,9 +320,9 @@ const ContactModal = ({
                 borderRadius: 30,
                 alignSelf: "center",
               }}
-              {...panResponder.panHandlers}
-            ></View>
+              ></View>
 
+              </View>
             {/* Edit Option */}
             {!editable && selected == 0 && (
               <View
@@ -328,6 +330,7 @@ const ContactModal = ({
                   width: "100%",
                   alignItems: "flex-end",
                   paddingHorizontal: 11,
+                  marginTop:20
                 }}
                 {...panResponder.panHandlers}
               >
@@ -363,6 +366,7 @@ const ContactModal = ({
                   justifyContent: "space-between",
                   paddingHorizontal: 11,
                   flexDirection: "row",
+                  marginTop:20
                 }}
                 {...panResponder.panHandlers}
               >
@@ -402,10 +406,14 @@ const ContactModal = ({
               </View>
             )}
 
+          <ScrollView style={{ width: "100%", height: "100%" }}>
+            
+
+            
             <View
               style={{
                 width: "100%",
-                marginTop: 25,
+                marginTop: 5,
                 paddingHorizontal: 24,
                 justifyContent: "space-around",
               }}
@@ -1525,6 +1533,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
+    marginTop: Platform.OS === "ios" ? 65 : 35,
   },
   modalView: {
     flex: 1,

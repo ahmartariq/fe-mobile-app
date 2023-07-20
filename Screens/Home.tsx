@@ -216,10 +216,30 @@ const openDrawer = () => {
             // marginLeft: '50%',
             // transform: [{ translateX: -50 }],
             marginBottom: 22,
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             paddingHorizontal: 24,
+            
           }}>
+<View style={{flexDirection:'row', alignItems:'center', opacity: 0}}>
+<View
+            style={{
+              width: 44,
+              height: 44,
+              overflow: 'hidden',
+              borderRadius: 100,
+            }}
+            >
+            <Image
+              source={require('../assets/profile.png')}
+              style={{ aspectRatio: 1, width: '100%', height: '100%' }}
+            />
+          </View>
+          <SvgXml xml={bell} style={{ marginLeft:22 }} />
+
+</View>
           <Text style={styles.headerTitle}>Home</Text>
+          
+          <View style={{flexDirection:'row', alignItems:'center'}}>
           <SvgXml xml={bell} style={{ marginRight: 22 }} />
           
           <TouchableOpacity
@@ -235,6 +255,7 @@ const openDrawer = () => {
               style={{ aspectRatio: 1, width: '100%', height: '100%' }}
             />
           </TouchableOpacity>
+          </View>
         </View>
       </LinearGradient>
 
@@ -410,7 +431,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: 'white',
-    marginRight: 60,
+
   },
   body: {
     paddingHorizontal: 15,
