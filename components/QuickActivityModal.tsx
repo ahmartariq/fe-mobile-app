@@ -529,7 +529,7 @@ const QuickActivityModal = ({
                           fontWeight: "600",
                         }}
                       >
-                        {letter}
+                        {createLetter(name)}
                       </Text>
                     </LinearGradient>
                     <View

@@ -461,6 +461,7 @@ const openDrawer = () => {
                 xAxisColor="transparent"
                 noOfSections={6}
                 color="#3C58F7"
+                disableScroll={true}
               />
               <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'flex-end', }}>
                 <View style={{ width: "89%", flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -516,7 +517,7 @@ const openDrawer = () => {
                 noOfSections={6}
                 spacing={35}
                 labelWidth={25}
-
+                disableScroll={true}
               />
             </View>
           </View>

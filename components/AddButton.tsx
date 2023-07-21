@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     popup: {
         width: windowWidth,
         height: windowHeight,
-        bottom: 65,
+        bottom: 60,
         backgroundColor: 'transparent',
         position: 'absolute',
         justifyContent: 'center',

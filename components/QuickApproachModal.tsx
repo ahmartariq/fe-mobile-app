@@ -84,20 +84,41 @@ const closeIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" x
 <path d="M18.6281 3.82422C19.3442 3.0918 19.3442 1.90234 18.6281 1.16992C17.9119 0.4375 16.7489 0.4375 16.0328 1.16992L9.99994 7.3457L3.9614 1.17578C3.24526 0.443359 2.08223 0.443359 1.36609 1.17578C0.649943 1.9082 0.649943 3.09766 1.36609 3.83008L7.40463 10L1.37182 16.1758C0.655672 16.9082 0.655672 18.0977 1.37182 18.8301C2.08796 19.5625 3.25098 19.5625 3.96713 18.8301L9.99994 12.6543L16.0385 18.8242C16.7546 19.5566 17.9177 19.5566 18.6338 18.8242C19.3499 18.0918 19.3499 16.9023 18.6338 16.1699L12.5953 10L18.6281 3.82422Z" fill="#E3E6E4"/>
 </svg>`
 
+interface Data {
+    name: string;
+    email: string;
+  }
+  const dataArray: Data[] = [
+    { name: "Ben Fisher", email: "ben.fisher@mailing.com" },
+    { name: "Annette Black", email: "annette.black@appxelent.com" },
+    { name: "Albert Flores", email: "albert.flores@google.com" },
+    { name: "Bessie Cooper", email: "bessie.cooper@finance-ab.com" },
+    { name: "Brooklyn Simmons", email: "brooklyn.simmons@netsome.com" },
+    { name: "Courtney Henry", email: "courtney.henry@example.com" },
+    { name: "Arlene McCoy", email: "arlene.mccoy@ingen.com" },
+  ];
+  
+  const colorCombinations = [
+    ["#3C58F7", "#34DCFC"],
+    ["#D73C3C", "#34DCFC"],
+    ["#3CF770", "#34DCFC"],
+    ["#F7A13C", "#34DCFC"],
+  ];
 
 const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (modal: boolean) => void }) => {
     const activityRef = useRef(null);
     const [title, setTitle] = useState<string>("")
     const [search, setSearch] = useState<string>("")
-    const [name, setName] = useState<string>("Jane Cooper")
+    const [name, setName] = useState<string>("")
     const [letter, setLetter] = useState<string>("")
-    const [email, setEmail] = useState<string>("janecooper@finance.com")
+    const [email, setEmail] = useState<string>("")
     const [description, setDescription] = useState<string>("")
     const [recording, setRecording] = useState<any>();
     const [recordings, setRecordings] = useState<any[]>([]);
     const [IsRecording, SetIsRecording] = useState<boolean>(false);
     const [IsPLaying, SetIsPLaying] = useState<number>(-1);
     const [errorMessage, setErrorMessage] = useState({ title : "", description: "" });
+    const [filteredData, setFilteredData] = useState<Data[]>([]);
 
     const AudioPlayer = useRef(new Audio.Sound());
 
@@ -237,7 +258,30 @@ const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (mo
     }
 
 
-
+    const createLetter = (name: string) => {
+        const namesArray = name.split(" ");
+        const firstName = namesArray[0] || "";
+        const lastName = namesArray[1] || "";
+        return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+      };
+    
+      const getRandomColors = () => {
+        const randomIndex = Math.floor(Math.random() * colorCombinations.length);
+        return colorCombinations[randomIndex];
+      };
+      const handleSearch = (query: string) => {
+        setSearch(query);
+        const filteredContacts = sortedArray.filter((contact) =>
+          contact.name.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredData(filteredContacts);
+      };
+    
+      useEffect(() => {
+        handleSearch(search);
+      }, [search]);
+      const sortedArray = dataArray.sort((a, b) => a.name.localeCompare(b.name));
+    
     return (
         <Modal
             animationType="slide"
@@ -283,20 +327,63 @@ const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (mo
                         />
                     </View>
 
-                    <View style={{ width: '100%', flexDirection: "row" , paddingHorizontal: 24, marginTop: 20 }} {...panResponder.panHandlers}>
-                        <LinearGradient colors={["#3C58F7", '#34DCFC']} style={styles.gradient}>
-                            <Text style={{ color: 'black', fontSize: 30, fontWeight: '600' }}>{letter}</Text>
-                        </LinearGradient>
-                        <View style={{ flexDirection: 'column', justifyContent: 'center', marginLeft: 21 }}>
-                            <Text style={{ color: '#1F1F1F', fontSize: 16, fontWeight: '600'}}>{name}</Text>
-                            <Text style={{ color: '#545454', fontSize: 14, fontWeight: '400', marginTop: 4 }}>{email}</Text>
-                        </View>
-                    </View>
 
                     <ScrollView style={{ flex: 1, width: '100%', flexDirection: 'column', paddingHorizontal: 24, marginTop: 16 }}>
-
-                        {/* title */}
-                        <View style={{ width: "100%", marginTop: 10 }}>
+{search==="" && (<View>
+    {name !== "" && email !== "" && (
+                  <View
+                    style={{
+                      width: "100%",
+                      flexDirection: "row",
+                      marginBottom: 20,
+                    }}
+                    {...panResponder.panHandlers}
+                  >
+                    <LinearGradient
+                      colors={["#3C58F7", "#34DCFC"]}
+                      style={styles.gradient}
+                    >
+                      <Text
+                        style={{
+                          color: "black",
+                          fontSize: 30,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {createLetter(name)}
+                      </Text>
+                    </LinearGradient>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        marginLeft: 21,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#1F1F1F",
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {name}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#545454",
+                          fontSize: 14,
+                          fontWeight: "400",
+                          marginTop: 4,
+                        }}
+                      >
+                        {email}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+     {/* title */}
+     <View style={{ width: "100%", marginTop: 10 }}>
                             <Text style={styles.label}>Titel</Text>
                             <TextInput
                                 style={{ backgroundColor: '#ffffff' }}
@@ -360,6 +447,57 @@ const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (mo
                             </View>
                         ))}
 
+</View>)}
+
+
+{search !== "" &&
+              filteredData.map(({ name, email }) => {
+                const [startColor, endColor] = getRandomColors();
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => {
+                      setName(name);
+                      setEmail(email);
+                      setSearch("");
+                    }}
+                    key={name}
+                    style={styles.card}
+                  >
+                    <LinearGradient
+                      style={styles.gradient1}
+                      colors={[startColor, endColor]}
+                    >
+                      {/* showing letter */}
+                      <Text
+                        style={{
+                          color: "#202020",
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {createLetter(name)}
+                      </Text>
+                    </LinearGradient>
+                    <View style={{ marginLeft: 20 }}>
+                      <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                        {name}
+                      </Text>
+                      <Text
+                        style={{
+                          marginTop: 4,
+                          fontSize: 12,
+                          fontWeight: "400",
+                          color: "#545454",
+                        }}
+                      >
+                        {email}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+                       
                     </ScrollView>
                     <View style={{ width: "100%", paddingHorizontal: 24, alignItems: 'center' }}>
                         <TouchableOpacity
@@ -433,6 +571,18 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
     },
+    gradient1: {
+        width: 46,
+        height: 46,
+        borderRadius: 100,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      card: {
+        flexDirection: "row",
+        width: "100%",
+        marginBottom: 20,
+      },
 })
 
 export default QuickApproachModal;

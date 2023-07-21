@@ -1004,7 +1004,7 @@ const ContactModal = ({
                           )}
                         </View>
                       ) : null}
-                      {editable || info.verbindungsperson !== "" ? (
+                      {editable || search !== "" ? (
                         <View
                           style={{
                             width: "100%",
