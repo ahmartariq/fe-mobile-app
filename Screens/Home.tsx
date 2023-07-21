@@ -138,7 +138,6 @@ const Home = ({ navigation }: { navigation: any }) => {
   const [openBar, setOpenBar] = useState(false);
   const [typeBar, setTypeBar] = useState<string>(barItems[0].value);
   const [type, setType] = useState<string>(items[0].value);
-  
   const lineData = [
     {
       value: 10,
@@ -175,7 +174,124 @@ const Home = ({ navigation }: { navigation: any }) => {
       dataPointLabelShiftY: -70,
       dataPointLabelShiftX: 0,
     },
+    {
+      value: 40,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(45, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 39,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(45, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
 
+  ];
+  const lineData1 = [
+    {
+      value: 15,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(15, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 27,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(27, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 35,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(35, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 40,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(40, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 43,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(43, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 37,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(37, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 35,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(35, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+
+  ];
+  const lineData2 = [
+    {
+      value: 20,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(20, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 15,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(15, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 35,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(35, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 19,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(19, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 32,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(32, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 37,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(37, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
+    {
+      value: 35,
+      customDataPoint: customDataPoint,
+      dataPointLabelComponent: () => customDataLabel(35, new Date()),
+      dataPointLabelShiftY: -70,
+      dataPointLabelShiftX: 0,
+    },
   ];
 
   const barData = [
@@ -321,7 +437,7 @@ const openDrawer = () => {
               <LineChart
                 initialSpacing={0}
                 curved
-                data={lineData}
+                data={type === "Woche" ? lineData : type === "Monat" ? lineData1 : type === "Jahr" ? lineData2 : null}
                 thickness={2.5}
                 focusEnabled
                 showStripOnFocus
@@ -348,13 +464,13 @@ const openDrawer = () => {
               />
               <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'flex-end', }}>
                 <View style={{ width: "89%", flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW1</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW2</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW3</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW4</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW5</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW6</Text>
-                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>KW7</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW1" : type === "Monat" ? "KM1" : type === "Jahr" ? "KJ1" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW2" : type === "Monat" ? "KM2" : type === "Jahr" ? "KJ2" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW3" : type === "Monat" ? "KM3" : type === "Jahr" ? "KJ3" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW4" : type === "Monat" ? "KM4" : type === "Jahr" ? "KJ4" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW5" : type === "Monat" ? "KM5" : type === "Jahr" ? "KJ5" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW6" : type === "Monat" ? "KM6" : type === "Jahr" ? "KJ6" : ""}</Text>
+                  <Text style={{fontSize:12, fontWeight: "400" , color: "#808080"}}>{type === "Woche" ? "KW7" : type === "Monat" ? "KM7" : type === "Jahr" ? "KJ7" : ""}</Text>
                 </View>
               </View>
             </View>

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import ActivityDetailModal from "./ActivityDetailModal";
@@ -406,7 +407,7 @@ const ContactModal = ({
               </View>
             )}
 
-          <ScrollView style={{ width: "100%", height: "100%" }}>
+          <ScrollView style={{ width: "100%", height: "100%", marginBottom:50 }}>
             
 
             
