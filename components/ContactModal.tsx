@@ -20,8 +20,8 @@ import ApproachDetailModal from "./ApproachDetailModal";
 import DateTimePicker, {
   DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
+import { TextInput as TextInput1 } from "react-native-paper";
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17.5 18.3333H2.5C2.15833 18.3333 1.875 18.0499 1.875 17.7083C1.875 17.3666 2.15833 17.0833 2.5 17.0833H17.5C17.8417 17.0833 18.125 17.3666 18.125 17.7083C18.125 18.0499 17.8417 18.3333 17.5 18.3333Z" fill="white"/>
@@ -146,27 +146,26 @@ const approaches = [
   },
 ];
 interface Data {
-    name: string;
-    email: string;
-  }
-  
-  const dataArray: Data[] = [
-    { name: "Ben Fisher", email: "ben.fisher@mailing.com" },
-    { name: "Annette Black", email: "annette.black@appxelent.com" },
-    { name: "Albert Flores", email: "albert.flores@google.com" },
-    { name: "Bessie Cooper", email: "bessie.cooper@finance-ab.com" },
-    { name: "Brooklyn Simmons", email: "brooklyn.simmons@netsome.com" },
-    { name: "Courtney Henry", email: "courtney.henry@example.com" },
-    { name: "Arlene McCoy", email: "arlene.mccoy@ingen.com" },
-  ];
-  
-  const colorCombinations = [
-    ["#3C58F7", "#34DCFC"],
-    ["#D73C3C", "#34DCFC"],
-    ["#3CF770", "#34DCFC"],
-    ["#F7A13C", "#34DCFC"],
-  ];
-  
+  name: string;
+  email: string;
+}
+
+const dataArray: Data[] = [
+  { name: "Ben Fisher", email: "ben.fisher@mailing.com" },
+  { name: "Annette Black", email: "annette.black@appxelent.com" },
+  { name: "Albert Flores", email: "albert.flores@google.com" },
+  { name: "Bessie Cooper", email: "bessie.cooper@finance-ab.com" },
+  { name: "Brooklyn Simmons", email: "brooklyn.simmons@netsome.com" },
+  { name: "Courtney Henry", email: "courtney.henry@example.com" },
+  { name: "Arlene McCoy", email: "arlene.mccoy@ingen.com" },
+];
+
+const colorCombinations = [
+  ["#3C58F7", "#34DCFC"],
+  ["#D73C3C", "#34DCFC"],
+  ["#3CF770", "#34DCFC"],
+  ["#F7A13C", "#34DCFC"],
+];
 
 const ContactModal = ({
   contactModel,
@@ -196,6 +195,8 @@ const ContactModal = ({
   const [isOpen, setIsOpen] = useState(false);
   const [check, setCheck] = useState(false);
   const [search, setSearch] = useState<string>("");
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState("date");
 
   const modalRef = useRef(null);
 
@@ -263,6 +264,26 @@ const ContactModal = ({
     // Call the function to close the modal
     setContactModel(false);
   };
+  const onDateChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: any) => {
+    if (Platform.OS === "ios") {
+      setShow(!show);
+      setMode(currentMode);
+    } else {
+      DateTimePickerAndroid.open({
+        value: date,
+        onChange: onDateChange,
+        mode: currentMode,
+      });
+    }
+  };
+  const showDatepicker = () => {
+    showMode("date");
+  };
 
   const monthNames = [
     "Januar",
@@ -309,11 +330,11 @@ const ContactModal = ({
       <View style={styles.centeredView}>
         <View ref={modalRef} style={styles.modalView}>
           {/* Top Line */}
-          <View 
-              {...panResponder.panHandlers}
-          style={{width: "100%", paddingBottom: 30}}>
-
           <View
+            {...panResponder.panHandlers}
+            style={{ width: "100%", paddingBottom: 30 }}
+          >
+            <View
               style={{
                 width: 54,
                 height: 6,
@@ -321,96 +342,94 @@ const ContactModal = ({
                 borderRadius: 30,
                 alignSelf: "center",
               }}
-              ></View>
-
-              </View>
-            {/* Edit Option */}
-            {!editable && selected == 0 && (
-              <View
-                style={{
-                  width: "100%",
-                  alignItems: "flex-end",
-                  paddingHorizontal: 11,
-                  marginTop:20
+            ></View>
+          </View>
+          {/* Edit Option */}
+          {!editable && selected == 0 && (
+            <View
+              style={{
+                width: "100%",
+                alignItems: "flex-end",
+                paddingHorizontal: 11,
+                marginTop: 20,
+              }}
+              {...panResponder.panHandlers}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setEditable(!editable);
                 }}
-                {...panResponder.panHandlers}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    setEditable(!editable);
-                  }}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    backgroundColor: "#CBCBCB",
-                    borderRadius: 30,
-                  }}
-                >
-                  <SvgXml
-                    xml={edit}
-                    width={20}
-                    height={20}
-                    style={{ alignSelf: "center", marginTop: 12 }}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {/*  editable */}
-            {editable && selected == 0 && (
-              <View
                 style={{
-                  width: "100%",
-                  minHeight: 40,
-                  marginBottom: 4,
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 11,
-                  flexDirection: "row",
-                  marginTop:20
+                  width: 44,
+                  height: 44,
+                  backgroundColor: "#CBCBCB",
+                  borderRadius: 30,
                 }}
-                {...panResponder.panHandlers}
               >
-                <TouchableOpacity
-                  onPress={() => {
-                    setEditable(!editable);
-                  }}
-                  style={{ paddingHorizontal: 20 }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 15,
-                      fontWeight: "500",
-                      color: "#818181",
-                    }}
-                  >
-                    Abbrechen
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setEditable(!editable);
-                  }}
+                <SvgXml
+                  xml={edit}
+                  width={20}
+                  height={20}
+                  style={{ alignSelf: "center", marginTop: 12 }}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/*  editable */}
+          {editable && selected == 0 && (
+            <View
+              style={{
+                width: "100%",
+                minHeight: 40,
+                marginBottom: 4,
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 11,
+                flexDirection: "row",
+                marginTop: 20,
+              }}
+              {...panResponder.panHandlers}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  setEditable(!editable);
+                }}
+                style={{ paddingHorizontal: 20 }}
+              >
+                <Text
                   style={{
-                    backgroundColor: "#3C58F7",
-                    borderRadius: 30,
-                    paddingHorizontal: 8,
-                    paddingVertical: 6,
+                    fontSize: 15,
+                    fontWeight: "500",
+                    color: "#818181",
                   }}
                 >
-                  <Text
-                    style={{ fontSize: 15, fontWeight: "500", color: "white" }}
-                  >
-                    Speichern
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  Abbrechen
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setEditable(!editable);
+                }}
+                style={{
+                  backgroundColor: "#3C58F7",
+                  borderRadius: 30,
+                  paddingHorizontal: 8,
+                  paddingVertical: 6,
+                }}
+              >
+                <Text
+                  style={{ fontSize: 15, fontWeight: "500", color: "white" }}
+                >
+                  Speichern
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
-          <ScrollView style={{ width: "100%", height: "100%", marginBottom:50 }}>
-            
-
-            
+          <ScrollView
+            style={{ width: "100%", height: "100%", marginBottom: 50 }}
+          >
             <View
               style={{
                 width: "100%",
@@ -700,6 +719,7 @@ const ContactModal = ({
                       >
                         Allgemein
                       </Text>
+
                       {editable || info.geburtstag !== "" ? (
                         <View
                           style={{
@@ -721,43 +741,63 @@ const ContactModal = ({
                           >
                             Geburtstag
                           </Text>
-                          {editable ? (
-                            <TouchableOpacity
-                              style={{
-                                color: "#1F1F1F",
-                                fontSize: 14,
-                                fontWeight: "500",
-                                textAlign: "right",
-                              }}
-                              onPress={() => setShowDatePicker(true)}
+                          {Platform.OS === "android" ? (
+                            <Pressable
+                              onPress={showDatepicker}
+                              disabled={editable ? false : true}
                             >
-                              <Text style={{ fontSize: 14, fontWeight: "500" }}>
-                                {`${
+                              <TextInput1
+                                style={{
+                                  backgroundColor: "#FFFFFF",
+                                  height: 20,
+                                  right: -18,
+                                  bottom: -4,
+                                  position: "absolute",
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  alignSelf: "flex-end",
+                                }}
+                                theme={{ roundness: 9 }}
+                                label=""
+                                placeholder={"Select Date"}
+                                value={`${date.getDate()}.${
                                   date.getMonth() + 1
-                                }.${date.getDate()}.${date.getFullYear()}`}
-                              </Text>
-                            </TouchableOpacity>
+                                }.${date.getFullYear()}`}
+                                activeOutlineColor="none"
+                                outlineColor="#FFFFFF"
+                                mode="outlined"
+                                editable={false}
+                              />
+                            </Pressable>
                           ) : (
-                            <Text style={{ fontSize: 14, fontWeight: "500" }}>
-                              {`${
-                                date.getMonth() + 1
-                              }.${date.getDate()}.${date.getFullYear()}`}
-                            </Text>
-                          )}
-                          {showDatePicker && (
-                            <DateTimePicker
-                              value={date}
-                              mode="date"
-                              display="default"
-                              onChange={(event, selectedDate) => {
-                                const currentDate = selectedDate || date;
-                                setShowDatePicker(Platform.OS === "ios");
-                                setDate(currentDate);
+                            <TextInput1
+                              style={{
+                                backgroundColor: "#FFFFFF",
+                                height: 20,
+                                right: -18,
+                                bottom: -4,
+                                position: "absolute",
+                                fontSize: 14,
+                                fontWeight: "bold",
+                                alignSelf: "flex-end",
                               }}
+                              theme={{ roundness: 9 }}
+                              label=""
+                              placeholder={"Select Date"}
+                              value={`${date.getDate()}.${
+                                date.getMonth() + 1
+                              }.${date.getFullYear()}`}
+                              activeOutlineColor="none"
+                              outlineColor="#FFFFFF"
+                              mode="outlined"
+                              onPressIn={showDatepicker}
+                              editable={false}
+                              disabled={editable ? false : true}
                             />
                           )}
                         </View>
                       ) : null}
+
                       {editable || info.wohnort !== "" ? (
                         <View
                           style={{
@@ -1014,7 +1054,7 @@ const ContactModal = ({
                             paddingBottom: 10,
                             borderBottomWidth: 1,
                             borderBottomColor: "#C9C9C9",
-                            marginBottom: search!=="" && editable? 20:0
+                            marginBottom: search !== "" && editable ? 20 : 0,
                           }}
                         >
                           <Text
@@ -1036,66 +1076,69 @@ const ContactModal = ({
                             placeholder="Verbindungsperson"
                             placeholderTextColor="#D0D0D0"
                             value={search}
-                            onChangeText={(text)=>{setSearch(text);
-                            setCheck(false);
+                            onChangeText={(text) => {
+                              setSearch(text);
+                              setCheck(false);
                             }}
                             editable={editable}
                           />
                         </View>
                       ) : null}
 
-                              {/* setInfo({ ...info, verbindungsperson: text })
+                      {/* setInfo({ ...info, verbindungsperson: text })
                               value={info.verbindungsperson} */}
 
-                      {(search!=="" && editable && !check)
-                        && filteredData.map(({ name, email }) => {
-                            const [startColor, endColor] = getRandomColors();
-                            return (
-                              <TouchableOpacity
-                                activeOpacity={0.5}
-                                onPress={() => {
-                             
-                                setInfo({ ...info, verbindungsperson: name })
+                      {search !== "" &&
+                        editable &&
+                        !check &&
+                        filteredData.map(({ name, email }) => {
+                          const [startColor, endColor] = getRandomColors();
+                          return (
+                            <TouchableOpacity
+                              activeOpacity={0.5}
+                              onPress={() => {
+                                setInfo({ ...info, verbindungsperson: name });
                                 setSearch(name);
                                 setCheck(true);
-                                }}
-                                key={name}
-                                style={styles.card}
+                              }}
+                              key={name}
+                              style={styles.card}
+                            >
+                              <LinearGradient
+                                style={styles.gradient1}
+                                colors={[startColor, endColor]}
                               >
-                                <LinearGradient
-                                  style={styles.gradient1}
-                                  colors={[startColor, endColor]}
+                                {/* showing letter */}
+                                <Text
+                                  style={{
+                                    color: "#202020",
+                                    fontSize: 16,
+                                    fontWeight: "600",
+                                  }}
                                 >
-                                  {/* showing letter */}
-                                  <Text
-                                    style={{
-                                      color: "#202020",
-                                      fontSize: 16,
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    {createLetter(name)}
-                                  </Text>
-                                </LinearGradient>
-                                <View style={{ marginLeft: 20 }}>
-                                  <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                                    {name}
-                                  </Text>
-                                  <Text
-                                    style={{
-                                      marginTop: 4,
-                                      fontSize: 12,
-                                      fontWeight: "400",
-                                      color: "#545454",
-                                    }}
-                                  >
-                                    {email}
-                                  </Text>
-                                </View>
-                              </TouchableOpacity>
-                            );
-                          })           
-                      }
+                                  {createLetter(name)}
+                                </Text>
+                              </LinearGradient>
+                              <View style={{ marginLeft: 20 }}>
+                                <Text
+                                  style={{ fontSize: 16, fontWeight: "500" }}
+                                >
+                                  {name}
+                                </Text>
+                                <Text
+                                  style={{
+                                    marginTop: 4,
+                                    fontSize: 12,
+                                    fontWeight: "400",
+                                    color: "#545454",
+                                  }}
+                                >
+                                  {email}
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          );
+                        })}
 
                       {editable || info.kreis !== "" ? (
                         <View
@@ -1591,7 +1634,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     paddingHorizontal: 5,
-    
+
     marginBottom: 20,
   },
 });
