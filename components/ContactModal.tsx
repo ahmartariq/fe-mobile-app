@@ -22,6 +22,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { TextInput as TextInput1 } from "react-native-paper";
+import IOSDateModal from "./IOSDateModal";
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17.5 18.3333H2.5C2.15833 18.3333 1.875 18.0499 1.875 17.7083C1.875 17.3666 2.15833 17.0833 2.5 17.0833H17.5C17.8417 17.0833 18.125 17.3666 18.125 17.7083C18.125 18.0499 17.8417 18.3333 17.5 18.3333Z" fill="white"/>
@@ -260,6 +261,11 @@ const ContactModal = ({
     })
   ).current;
 
+  const onIOSChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
+
   const closeModal = () => {
     // Call the function to close the modal
     setContactModel(false);
@@ -281,6 +287,7 @@ const ContactModal = ({
       });
     }
   };
+
   const showDatepicker = () => {
     showMode("date");
   };
@@ -302,9 +309,8 @@ const ContactModal = ({
 
   const dateFormat = (date: string) => {
     const dateObj = new Date(date);
-    const formattedDate = `${dateObj.getDate()} ${
-      monthNames[dateObj.getMonth()]
-    } ${dateObj.getFullYear()}`;
+    const formattedDate = `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]
+      } ${dateObj.getFullYear()}`;
     return formattedDate;
   };
 
@@ -760,9 +766,8 @@ const ContactModal = ({
                                 theme={{ roundness: 9 }}
                                 label=""
                                 placeholder={"Select Date"}
-                                value={`${date.getDate()}.${
-                                  date.getMonth() + 1
-                                }.${date.getFullYear()}`}
+                                value={`${date.getDate()}.${date.getMonth() + 1
+                                  }.${date.getFullYear()}`}
                                 activeOutlineColor="none"
                                 outlineColor="#FFFFFF"
                                 mode="outlined"
@@ -775,24 +780,23 @@ const ContactModal = ({
                                 backgroundColor: "#FFFFFF",
                                 height: 20,
                                 right: -18,
-                                bottom: -4,
+                                bottom: 4,
                                 position: "absolute",
                                 fontSize: 14,
-                                fontWeight: "bold",
+                                fontWeight: "600",
                                 alignSelf: "flex-end",
                               }}
                               theme={{ roundness: 9 }}
                               label=""
                               placeholder={"Select Date"}
-                              value={`${date.getDate()}.${
-                                date.getMonth() + 1
-                              }.${date.getFullYear()}`}
+                              value={`${date.getDate()}.${date.getMonth() + 1
+                                }.${date.getFullYear()}`}
                               activeOutlineColor="none"
                               outlineColor="#FFFFFF"
                               mode="outlined"
                               onPressIn={showDatepicker}
                               editable={false}
-                              disabled={editable ? false : true}
+                            // disabled={editable ? false : true}
                             />
                           )}
                         </View>
@@ -1262,8 +1266,8 @@ const ContactModal = ({
                                   item.type === "Email"
                                     ? email
                                     : item.type === "Telefonat"
-                                    ? phone
-                                    : group
+                                      ? phone
+                                      : group
                                 }
                                 width={18}
                                 height={18}
@@ -1567,6 +1571,9 @@ const ContactModal = ({
           setModal={setApproachModal}
           data={approachData}
         />
+
+        <IOSDateModal modal={show} setModal={setShow} date={date} setDate={onIOSChange} />
+
       </View>
     </Modal>
   );
