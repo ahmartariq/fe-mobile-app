@@ -338,7 +338,7 @@ const ContactModal = ({
           {/* Top Line */}
           <View
             {...panResponder.panHandlers}
-            style={{ width: "100%", paddingBottom: 30 }}
+            style={{ width: "100%", paddingBottom: 20 }}
           >
             <View
               style={{
@@ -357,7 +357,7 @@ const ContactModal = ({
                 width: "100%",
                 alignItems: "flex-end",
                 paddingHorizontal: 11,
-                marginTop: 20,
+                
               }}
               {...panResponder.panHandlers}
             >
@@ -393,7 +393,7 @@ const ContactModal = ({
                 justifyContent: "space-between",
                 paddingHorizontal: 11,
                 flexDirection: "row",
-                marginTop: 20,
+                
               }}
               {...panResponder.panHandlers}
             >
@@ -446,7 +446,7 @@ const ContactModal = ({
             >
               {/* Contact Details */}
               <View
-                style={{ width: "100%", flexDirection: "row" }}
+                style={{ width: "100%", flexDirection: "row", marginTop:selected===0?0:44 }}
                 {...panResponder.panHandlers}
               >
                 <LinearGradient

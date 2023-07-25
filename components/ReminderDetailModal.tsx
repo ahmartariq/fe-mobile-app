@@ -327,7 +327,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/* Top Line */}
                     <View 
               {...panResponder.panHandlers}
-          style={{width: "100%", paddingBottom: 30}}>
+          style={{width: "100%", paddingBottom: 20}}>
 
           <View
               style={{
@@ -342,7 +342,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/* Edit Option */}
                     {
                         !editable &&
-                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11,marginTop:20 }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11,}} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
                             </TouchableOpacity>
@@ -352,7 +352,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/*  editable */}
                     {
                         editable &&
-                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row", marginTop:20 }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row",}} {...panResponder.panHandlers}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>

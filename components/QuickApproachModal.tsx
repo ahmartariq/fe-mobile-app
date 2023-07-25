@@ -528,6 +528,8 @@ const styles = StyleSheet.create({
         height: '100%',
         flex: 1,
         justifyContent: 'flex-end',
+        marginTop: Platform.OS === "ios" ? 65 : 35,
+
     },
     modalView: {
         width: '100%',
