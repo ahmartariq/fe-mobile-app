@@ -1,13 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState, useRef, useEffect } from 'react'
-import { Modal, View, Text, Pressable, PanResponder, StyleSheet, Platform, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native'
+import { Modal, View, Text, Pressable, PanResponder, StyleSheet, Platform, TouchableOpacity,  Button, KeyboardAvoidingView } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { TextInput } from 'react-native-paper';
 import { Path, Svg, SvgXml } from 'react-native-svg';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import IOSDateModal from './IOSDateModal';
 import { Audio } from 'expo-av';
-
+import {
+    BottomSheetModal,
+    BottomSheetScrollView as ScrollView,
+  } from "@gorhom/bottom-sheet";
 
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -146,17 +149,17 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
         setDescription(data.description)
     }, [modal]);
 
-    const panResponder = useRef(
-        PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
-            onPanResponderRelease: (e, gestureState) => {
-                if (gestureState.dy > 50) {
-                    // Close the modal when swiped down by more than 50 pixels
-                    closeModal();
-                }
-            },
-        })
-    ).current;
+    // const panResponder = useRef(
+    //     PanResponder.create({
+    //         onStartShouldSetPanResponder: () => true,
+    //         onPanResponderRelease: (e, gestureState) => {
+    //             if (gestureState.dy > 50) {
+    //                 // Close the modal when swiped down by more than 50 pixels
+    //                 closeModal();
+    //             }
+    //         },
+    //     })
+    // ).current;
 
     const closeModal = () => {
         // Call the function to close the modal
@@ -297,18 +300,39 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
     const deleteActivity = () => {
         setModal(false)
     }
+    const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["100%", "100%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setModal(true);
+    }, 100);
+  }
+
+  if (modal) {
+    handlePresentModal();
+  }
+
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modal}
-            onRequestClose={() => setModal(!modal)}>
+        <BottomSheetModal
+
+        ref={bottomSheetModalRef}
+      handleIndicatorStyle={{ display: "none" }}
+      snapPoints={snapPoints}
+      backgroundStyle={{
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+      }}
+      onDismiss={() => setModal(false)}
+            >
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.centeredView}>
 
                 <View ref={activityRef} style={styles.modalView}>
                     {/* Top Line */}
                     <View 
-              {...panResponder.panHandlers}
+              //{...panResponder.panHandlers}
           style={{width: "100%", paddingBottom: 20}}>
 
           <View
@@ -325,7 +349,9 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/* Edit Option */}
                     {
                         !editable && 
-                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11 }} 
+                        //{...panResponder.panHandlers}
+                        >
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
                             </TouchableOpacity>
@@ -335,7 +361,9 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/*  editable */}
                     {
                         editable && 
-                        <View style={{ width: '100%',  minHeight: 40, marginBottom:4, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%',  minHeight: 40, marginBottom:4, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} 
+                        //{...panResponder.panHandlers}
+                        >
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>
@@ -345,7 +373,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         </View>
                     }
 
-                    <ScrollView style={{ flex: 1, width: '100%', flexDirection: 'column', paddingHorizontal: 24, marginTop: 16 }}>
+                    <ScrollView style={{ flex: 1, flexDirection: 'column', paddingHorizontal: 24, marginTop: 16 }}>
 
                         {/* Art der Aktivität */}
                         <View style={{ width: "100%" }}>
@@ -520,7 +548,7 @@ const ActivityDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
             </KeyboardAvoidingView>
 
             <IOSDateModal modal={show} setModal={setShow} date={date} setDate={onIOSChange} />
-        </Modal>
+        </BottomSheetModal>
     )
 }
 
@@ -531,7 +559,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flex: 1,
         justifyContent: 'flex-end',
-        marginTop:10
+        marginTop:Platform.OS === 'ios' ? 65 : 35,
     },
     modalView: {
         width: '100%',

@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
-  ScrollView,
   Button,
   KeyboardAvoidingView,
 } from "react-native";
@@ -21,6 +20,11 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import IOSDateModal, { IOSTimeModal } from "./IOSDateModal";
 import { Audio } from "expo-av";
+import {
+  BottomSheetModal,
+  BottomSheetScrollView as ScrollView,
+} from "@gorhom/bottom-sheet";
+
 
 const searchIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8.20111 15.3967C12.1782 15.3967 15.4022 12.1739 15.4022 8.19837C15.4022 4.22282 12.1782 1 8.20111 1C4.22405 1 1 4.22282 1 8.19837C1 12.1739 4.22405 15.3967 8.20111 15.3967Z" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -162,17 +166,17 @@ const QuickMemoryModal = ({
 
   const AudioPlayer = useRef(new Audio.Sound());
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderRelease: (e, gestureState) => {
-        if (gestureState.dy > 50) {
-          // Close the modal when swiped down by more than 50 pixels
-          closeModal();
-        }
-      },
-    })
-  ).current;
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onStartShouldSetPanResponder: () => true,
+  //     onPanResponderRelease: (e, gestureState) => {
+  //       if (gestureState.dy > 50) {
+  //         // Close the modal when swiped down by more than 50 pixels
+  //         closeModal();
+  //       }
+  //     },
+  //   })
+  // ).current;
 
   useEffect(() => {
     if (name !== "") {
@@ -371,12 +375,32 @@ const QuickMemoryModal = ({
   }, [search]);
   const sortedArray = dataArray.sort((a, b) => a.name.localeCompare(b.name));
 
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = ["100%", "100%"];
+  
+    function handlePresentModal() {
+      bottomSheetModalRef.current?.present();
+      setTimeout(() => {
+        setModal(true);
+      }, 100);
+    }
+  
+    if (modal) {    
+      handlePresentModal(); 
+    }
+
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modal}
-      onRequestClose={() => setModal(!modal)}
+    <BottomSheetModal
+    ref={bottomSheetModalRef}
+    handleIndicatorStyle={{ display: "none" }}
+    snapPoints={snapPoints}
+    backgroundStyle={{
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+    }}
+    onDismiss={() => {
+        setModal(false)}}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -391,7 +415,6 @@ const QuickMemoryModal = ({
               backgroundColor: "#D9D9D9",
               borderRadius: 30,
             }}
-            {...panResponder.panHandlers}
           ></View>
 
           {/*  editable */}
@@ -404,10 +427,12 @@ const QuickMemoryModal = ({
               paddingHorizontal: 11,
               flexDirection: "row",
             }}
-            {...panResponder.panHandlers}
           >
             <TouchableOpacity
-              onPress={closeModal}
+              onPress={()=>{
+                bottomSheetModalRef.current?.close()
+                setModal(false)
+              }}
               style={{ paddingHorizontal: 20 }}
             >
               <Text
@@ -439,7 +464,6 @@ const QuickMemoryModal = ({
               paddingHorizontal: 24,
               marginTop: 20,
             }}
-            {...panResponder.panHandlers}
           >
             <TextInput
               style={{ backgroundColor: "#ffffff", width: "100%" }}
@@ -468,15 +492,20 @@ const QuickMemoryModal = ({
 
           <ScrollView
             style={{
-              flex: 1,
+              
               width: "100%",
               flexDirection: "column",
               paddingHorizontal: 24,
               marginTop: 16,
             }}
           >
+            
             {search === "" && (
-              <View>
+              <View style={{
+                      width: "100%",
+                      flexDirection: "column",
+                      marginBottom: 20,
+                    }}>
                 {name !== "" && email !== "" && (
                   <View
                     style={{
@@ -484,7 +513,6 @@ const QuickMemoryModal = ({
                       flexDirection: "row",
                       marginBottom: 20,
                     }}
-                    {...panResponder.panHandlers}
                   >
                     <LinearGradient
                       colors={["#3C58F7", "#34DCFC"]}
@@ -530,7 +558,7 @@ const QuickMemoryModal = ({
                   </View>
                 )}
                 {/* Date */}
-                <View style={{ width: "100%", marginTop: 10 }}>
+                <View style={{ width: 350, marginTop: 10 }}>
                   <Text style={styles.label}>Datum</Text>
                   {Platform.OS === "android" ? (
                     <Pressable onPress={showDatepicker}>
@@ -829,7 +857,7 @@ const QuickMemoryModal = ({
         date={time}
         setDate={onIOSChange}
       />
-    </Modal>
+    </BottomSheetModal>
   );
 };
 
@@ -899,7 +927,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    width: "100%",
+    width: 340,
     marginBottom: 20,
   },
 });

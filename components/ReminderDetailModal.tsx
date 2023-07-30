@@ -1,12 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState, useRef, useEffect } from 'react'
-import { Modal, View, Text, Pressable, PanResponder, StyleSheet, Platform, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native'
+import { Modal, View, Text, Pressable, PanResponder, StyleSheet, Platform, TouchableOpacity, Button, KeyboardAvoidingView } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
 import { TextInput } from 'react-native-paper';
 import { Path, Svg, SvgXml } from 'react-native-svg';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import IOSDateModal, { IOSTimeModal } from './IOSDateModal';
 import { Audio } from 'expo-av';
+import {
+    BottomSheetModal,
+    BottomSheetScrollView as ScrollView,
+  } from "@gorhom/bottom-sheet";
 
 
 
@@ -148,18 +152,6 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
         }
         setDescription(data.description)
     }, [modal]);
-
-    const panResponder = useRef(
-        PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
-            onPanResponderRelease: (e, gestureState) => {
-                if (gestureState.dy > 50) {
-                    // Close the modal when swiped down by more than 50 pixels
-                    closeModal();
-                }
-            },
-        })
-    ).current;
 
     const closeModal = () => {
         // Call the function to close the modal
@@ -314,19 +306,38 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
         setModal(false)
     }
 
+    const bottomSheetModalRef = useRef(null);
+
+    const snapPoints = ["100%", "100%"];
+  
+    function handlePresentModal() {
+      bottomSheetModalRef.current?.present();
+      setTimeout(() => {
+        setModal(true);
+      }, 100);
+    }
+  
+    if (modal) {
+      handlePresentModal();
+    }
 
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modal}
-            onRequestClose={() => setModal(!modal)}>
+        <BottomSheetModal
+        ref={bottomSheetModalRef}
+        handleIndicatorStyle={{ display: "none" }}
+        snapPoints={snapPoints}
+        backgroundStyle={{
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+        }}
+        onDismiss={() => setModal(false)}
+        enableDismissOnClose={true}
+        >
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
 
                 <View ref={activityRef} style={styles.modalView}>
                     {/* Top Line */}
                     <View 
-              {...panResponder.panHandlers}
           style={{width: "100%", paddingBottom: 20}}>
 
           <View
@@ -342,7 +353,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/* Edit Option */}
                     {
                         !editable &&
-                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11,}} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', alignItems: 'flex-end', paddingHorizontal: 11,}}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ width: 44, height: 44, backgroundColor: "#CBCBCB", borderRadius: 30 }}>
                                 <SvgXml xml={edit} width={20} height={20} style={{ alignSelf: 'center', marginTop: 12 }} />
                             </TouchableOpacity>
@@ -352,7 +363,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     {/*  editable */}
                     {
                         editable &&
-                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row",}} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row",}}>
                             <TouchableOpacity onPress={() => { setEditable(!editable) }} style={{ paddingHorizontal: 20 }}>
                                 <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                             </TouchableOpacity>
@@ -365,7 +376,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                     <ScrollView style={{ flex: 1, width: '100%', flexDirection: 'column', paddingHorizontal: 24, marginTop: 16 }}>
 
                         {/* Date */}
-                        <View style={{ width: "100%", marginTop: 10 }}>
+                        <View style={{ width: 350, marginTop: 10 }}>
                             <Text style={styles.label}>Datum</Text>
                             {
                                 Platform.OS === 'android' ? (
@@ -420,7 +431,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         </View>
 
                         {/* Time */}
-                        <View style={{ width: "100%", marginTop: 10 }}>
+                        <View style={{width: "100%",marginTop: 10 }}>
                             <Text style={styles.label}>Uhrzeit</Text>
                             {
                                 Platform.OS === 'android' ? (
@@ -475,7 +486,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                         </View>
 
                         {/* Beschreibung */}
-                        <View style={{ width: "100%", marginTop: 10 }}>
+                        <View style={{ width: "100%",marginTop: 10 }}>
                             <Text style={styles.label}>Beschreibung</Text>
                             <TextInput
                                 style={{ backgroundColor: '#ffffff' }}
@@ -493,10 +504,6 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
                             />
                         </View>
 
-                        <View style={{ width: "100%", marginTop: 28, flexDirection: 'column' }}>
-
-
-                        </View>
                         {recordings.map((recording, index) => (
                             <View style={{ width: "100%", flexDirection: 'row', marginTop: 8 }}>
                                 <View style={{ width: "90%", height: 45, borderWidth: 1, borderColor: "#949F99", borderRadius: 9, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6 }}>
@@ -545,7 +552,7 @@ const ReminderDetailModal = ({ modal, setModal, data }: { modal: boolean, setMod
 
             <IOSDateModal modal={show} setModal={setShow} date={date} setDate={onIOSChange} />
             <IOSTimeModal modal={showTime} setModal={setShowTime} date={time} setDate={onIOSChange} />
-        </Modal>
+        </BottomSheetModal>
     )
 }
 
@@ -556,7 +563,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flex: 1,
         justifyContent: 'flex-end',
-        marginTop:10
+        marginTop: Platform.OS === 'ios' ? 65 : 35,
     },
     modalView: {
         width: '100%',

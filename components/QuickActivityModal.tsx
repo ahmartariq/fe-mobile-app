@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
-  ScrollView,
   ViewStyle,
   KeyboardAvoidingView,
 } from "react-native";
@@ -21,6 +20,13 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import IOSDateModal from "./IOSDateModal";
 import { Audio } from "expo-av";
+import {
+  BottomSheetModal,
+  useBottomSheetModal, 
+  BottomSheetScrollView as ScrollView,
+} from "@gorhom/bottom-sheet";
+import { set } from "react-native-reanimated";
+
 
 const searchIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8.20111 15.3967C12.1782 15.3967 15.4022 12.1739 15.4022 8.19837C15.4022 4.22282 12.1782 1 8.20111 1C4.22405 1 1 4.22282 1 8.19837C1 12.1739 4.22405 15.3967 8.20111 15.3967Z" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -227,22 +233,22 @@ const QuickActivityModal = ({
     }
   }, []);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderRelease: (e, gestureState) => {
-        if (gestureState.dy > 50) {
-          // Close the modal when swiped down by more than 50 pixels
-          closeModal();
-        }
-      },
-    })
-  ).current;
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onStartShouldSetPanResponder: () => true,
+  //     onPanResponderRelease: (e, gestureState) => {
+  //       if (gestureState.dy > 50) {
+  //         // Close the modal when swiped down by more than 50 pixels
+  //         closeModal();
+  //       }
+  //     },
+  //   })
+  // ).current;
 
   const closeModal = () => {
     // Call the function to close the modal
-    setModal(false);
-  };
+    bottomSheetModalRef.current?.close()
+    };
 
   const handleAdd = () => {
     if (type === "") {
@@ -402,12 +408,33 @@ const QuickActivityModal = ({
     setRecordings(newRecordings);
   };
 
+
+  const snapPoints = ["100%", "100%"];
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setModal(true);
+    }, 100);
+  }
+
+
+  if (modal) {
+    handlePresentModal();
+  }
+
+
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modal}
-      onRequestClose={() => setModal(!modal)}
+    <BottomSheetModal
+    ref={bottomSheetModalRef}
+    handleIndicatorStyle={{ display: "none" }}
+    snapPoints={snapPoints}
+    backgroundStyle={{
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+    }}
+    onDismiss={() => setModal(false)}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -422,7 +449,7 @@ const QuickActivityModal = ({
               backgroundColor: "#D9D9D9",
               borderRadius: 30,
             }}
-            {...panResponder.panHandlers}
+           
           ></View>
 
           {/* Edit Option */}
@@ -437,10 +464,12 @@ const QuickActivityModal = ({
               paddingHorizontal: 11,
               flexDirection: "row",
             }}
-            {...panResponder.panHandlers}
+           
           >
             <TouchableOpacity
-              onPress={closeModal}
+              onPress={()=>{    bottomSheetModalRef.current?.close()
+                setModal(false)
+              }}
               style={{ paddingHorizontal: 20 }}
             >
               <Text
@@ -472,7 +501,7 @@ const QuickActivityModal = ({
               paddingHorizontal: 24,
               marginTop: 20,
             }}
-            {...panResponder.panHandlers}
+           
           >
             <TextInput
               style={{ backgroundColor: "#ffffff", width: "100%" }}
@@ -501,7 +530,7 @@ const QuickActivityModal = ({
 
           <ScrollView
             style={{
-              width: "100%",
+              
               marginTop: 24,
               flexDirection: "column",
             }}
@@ -523,7 +552,7 @@ const QuickActivityModal = ({
                       flexDirection: "row",
                       marginBottom: 20,
                     }}
-                    {...panResponder.panHandlers}
+                   
                   >
                     <LinearGradient
                       colors={["#3C58F7", "#34DCFC"]}
@@ -880,7 +909,7 @@ const QuickActivityModal = ({
         date={date}
         setDate={onIOSChange}
       />
-    </Modal>
+    </BottomSheetModal>
   );
 };
 

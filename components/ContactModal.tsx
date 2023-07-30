@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
-  ScrollView,
   TextInput,
   KeyboardAvoidingView,
 } from "react-native";
@@ -23,6 +22,11 @@ import DateTimePicker, {
 import DropDownPicker from "react-native-dropdown-picker";
 import { TextInput as TextInput1 } from "react-native-paper";
 import IOSDateModal from "./IOSDateModal";
+import {
+  BottomSheetModal,
+  BottomSheetScrollView as ScrollView,
+} from "@gorhom/bottom-sheet";
+import { color } from "react-native-reanimated";
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17.5 18.3333H2.5C2.15833 18.3333 1.875 18.0499 1.875 17.7083C1.875 17.3666 2.15833 17.0833 2.5 17.0833H17.5C17.8417 17.0833 18.125 17.3666 18.125 17.7083C18.125 18.0499 17.8417 18.3333 17.5 18.3333Z" fill="white"/>
@@ -249,17 +253,32 @@ const ContactModal = ({
     }
   }, [data]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderRelease: (e, gestureState) => {
-        if (gestureState.dy > 50) {
-          // Close the modal when swiped down by more than 50 pixels
-          closeModal();
-        }
-      },
-    })
-  ).current;
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onStartShouldSetPanResponder: () => true,
+  //     onPanResponderRelease: (e, gestureState) => {
+  //       if (gestureState.dy > 50) {
+  //         // Close the modal when swiped down by more than 50 pixels
+  //         closeModal();
+  //       }
+  //     },
+  //   })
+  // ).current;
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["100%", "100%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setContactModel(true);
+    }, 100);
+  }
+
+  if (contactModel) {
+    handlePresentModal();
+  }
 
   const onIOSChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
@@ -309,8 +328,9 @@ const ContactModal = ({
 
   const dateFormat = (date: string) => {
     const dateObj = new Date(date);
-    const formattedDate = `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]
-      } ${dateObj.getFullYear()}`;
+    const formattedDate = `${dateObj.getDate()} ${
+      monthNames[dateObj.getMonth()]
+    } ${dateObj.getFullYear()}`;
     return formattedDate;
   };
 
@@ -327,17 +347,30 @@ const ContactModal = ({
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   return (
-    <Modal
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      handleIndicatorStyle={{ display: "none" }}
+      snapPoints={snapPoints}
+      backgroundStyle={{
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+      }}
+      onDismiss={() => setContactModel(false)}
+    >
+      {/* <Modal
       animationType="slide"
       transparent={true}
       visible={contactModel}
       onRequestClose={() => setContactModel(!contactModel)}
-    >
-      <View style={styles.centeredView}>
+    > */}
+      <KeyboardAvoidingView
+        style={styles.centeredView}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View ref={modalRef} style={styles.modalView}>
           {/* Top Line */}
           <View
-            {...panResponder.panHandlers}
+            //  {...panResponder.panHandlers}
             style={{ width: "100%", paddingBottom: 20 }}
           >
             <View
@@ -357,9 +390,8 @@ const ContactModal = ({
                 width: "100%",
                 alignItems: "flex-end",
                 paddingHorizontal: 11,
-                
               }}
-              {...panResponder.panHandlers}
+              ///    {...panResponder.panHandlers}
             >
               <TouchableOpacity
                 onPress={() => {
@@ -393,9 +425,8 @@ const ContactModal = ({
                 justifyContent: "space-between",
                 paddingHorizontal: 11,
                 flexDirection: "row",
-                
               }}
-              {...panResponder.panHandlers}
+              //   {...panResponder.panHandlers}
             >
               <TouchableOpacity
                 onPress={() => {
@@ -433,9 +464,7 @@ const ContactModal = ({
             </View>
           )}
 
-          <ScrollView
-            style={{ width: "100%", height: "100%", marginBottom: 50 }}
-          >
+          <ScrollView style={{ height: "100%", marginBottom: 50 }}>
             <View
               style={{
                 width: "100%",
@@ -446,8 +475,12 @@ const ContactModal = ({
             >
               {/* Contact Details */}
               <View
-                style={{ width: "100%", flexDirection: "row", marginTop:selected===0?0:44 }}
-                {...panResponder.panHandlers}
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  marginTop: selected === 0 ? 0 : 44,
+                }}
+                //    {...panResponder.panHandlers}
               >
                 <LinearGradient
                   colors={[data.startColor, data.endColor]}
@@ -766,8 +799,9 @@ const ContactModal = ({
                                 theme={{ roundness: 9 }}
                                 label=""
                                 placeholder={"Select Date"}
-                                value={`${date.getDate()}.${date.getMonth() + 1
-                                  }.${date.getFullYear()}`}
+                                value={`${date.getDate()}.${
+                                  date.getMonth() + 1
+                                }.${date.getFullYear()}`}
                                 activeOutlineColor="none"
                                 outlineColor="#FFFFFF"
                                 mode="outlined"
@@ -789,14 +823,15 @@ const ContactModal = ({
                               theme={{ roundness: 9 }}
                               label=""
                               placeholder={"Select Date"}
-                              value={`${date.getDate()}.${date.getMonth() + 1
-                                }.${date.getFullYear()}`}
+                              value={`${date.getDate()}.${
+                                date.getMonth() + 1
+                              }.${date.getFullYear()}`}
                               activeOutlineColor="none"
                               outlineColor="#FFFFFF"
                               mode="outlined"
                               onPressIn={showDatepicker}
                               editable={false}
-                            // disabled={editable ? false : true}
+                              // disabled={editable ? false : true}
                             />
                           )}
                         </View>
@@ -1266,8 +1301,8 @@ const ContactModal = ({
                                   item.type === "Email"
                                     ? email
                                     : item.type === "Telefonat"
-                                      ? phone
-                                      : group
+                                    ? phone
+                                    : group
                                 }
                                 width={18}
                                 height={18}
@@ -1572,10 +1607,14 @@ const ContactModal = ({
           data={approachData}
         />
 
-        <IOSDateModal modal={show} setModal={setShow} date={date} setDate={onIOSChange} />
-
-      </View>
-    </Modal>
+        <IOSDateModal
+          modal={show}
+          setModal={setShow}
+          date={date}
+          setDate={onIOSChange}
+        />
+      </KeyboardAvoidingView>
+    </BottomSheetModal>
   );
 };
 
@@ -1584,7 +1623,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
-    marginTop: Platform.OS === "ios" ? 65 : 35,
+    marginTop: Platform.OS === "ios" ? 60 : 35,
   },
   modalView: {
     flex: 1,

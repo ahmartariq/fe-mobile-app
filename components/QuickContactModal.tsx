@@ -5,7 +5,10 @@ import { SvgXml } from 'react-native-svg';
 import ActivityDetailModal from './ActivityDetailModal';
 import ReminderDetailModal from './ReminderDetailModal';
 import ApproachDetailModal from './ApproachDetailModal';
-
+import {
+    BottomSheetModal,
+    BottomSheetScrollView as ScrollView1,
+  } from "@gorhom/bottom-sheet";
 
 const edit = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17.5 18.3333H2.5C2.15833 18.3333 1.875 18.0499 1.875 17.7083C1.875 17.3666 2.15833 17.0833 2.5 17.0833H17.5C17.8417 17.0833 18.125 17.3666 18.125 17.7083C18.125 18.0499 17.8417 18.3333 17.5 18.3333Z" fill="white"/>
@@ -101,17 +104,31 @@ const QuickContactModal = ({ modal, setModal }: { modal: boolean, setModal: (mod
         }
     }, [name]);
 
-    const panResponder = useRef(
-        PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
-            onPanResponderRelease: (e, gestureState) => {
-                if (gestureState.dy > 50) {
-                    // Close the modal when swiped down by more than 50 pixels
-                    closeModal();
-                }
-            },
-        })
-    ).current;
+    // const panResponder = useRef(
+    //     PanResponder.create({
+    //         onStartShouldSetPanResponder: () => true,
+    //         onPanResponderRelease: (e, gestureState) => {
+    //             if (gestureState.dy > 50) {
+    //                 // Close the modal when swiped down by more than 50 pixels
+    //                 closeModal();
+    //             }
+    //         },
+    //     })
+    // ).current;
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+    const snapPoints = ["100%", "100%"];
+  
+    function handlePresentModal() {
+      bottomSheetModalRef.current?.present();
+      setTimeout(() => {
+        setModal(true);
+      }, 100);
+    }
+  
+    if (modal) {    
+      handlePresentModal(); 
+    }
 
     const closeModal = () => {
         setModal(false);
@@ -176,20 +193,31 @@ const QuickContactModal = ({ modal, setModal }: { modal: boolean, setModal: (mod
     }
 
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modal}
-            onRequestClose={() => setModal(!modal)}>
+        <BottomSheetModal
+        ref={bottomSheetModalRef}
+        handleIndicatorStyle={{ display: "none" }}
+        snapPoints={snapPoints}
+        backgroundStyle={{
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+        }}
+        onDismiss={() => {
+            setModal(false)}}
+        >
             <View style={styles.centeredView}>
 
                 <View ref={modalRef} style={styles.modalView}>
                     {/* Top Line */}
-                    <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
+                    <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }}></View>
 
                     {/*  editable */}
-                    <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
-                        <TouchableOpacity onPress={closeModal} style={{ paddingHorizontal: 20 }}>
+                    <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }}>
+                        <TouchableOpacity onPress={()=>{
+                            bottomSheetModalRef.current?.close();
+                            setModal(false);
+                        }
+                        
+                        } style={{ paddingHorizontal: 20 }}>
                             <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleAddContact} style={{ backgroundColor: "#3C58F7", borderRadius: 30, paddingHorizontal: 8, paddingVertical: 6 }}>
@@ -200,7 +228,7 @@ const QuickContactModal = ({ modal, setModal }: { modal: boolean, setModal: (mod
                     <View style={{ width: '100%', marginTop: 20, paddingHorizontal: 24, height: "30%", justifyContent: "space-around" }}>
 
                         {/* Contact Details */}
-                        <View style={{ width: '100%', flexDirection: "row" }} {...panResponder.panHandlers}>
+                        <View style={{ width: '100%', flexDirection: "row" }}>
                             <LinearGradient colors={[startColor, endColor]} style={styles.gradient}>
                                 <Text style={{ color: 'black', fontSize: 30, fontWeight: '600' }}>{letter}</Text>
                             </LinearGradient>
@@ -237,7 +265,7 @@ const QuickContactModal = ({ modal, setModal }: { modal: boolean, setModal: (mod
 
                     <View style={{ width: '100%', paddingHorizontal: 24, height: "58%" }}>
 
-                        <ScrollView style={{ width: '100%', flexDirection: "column", marginTop: 22, height: '50%' }}>
+                        <ScrollView1 style={{ width: '100%', flexDirection: "column", marginTop: 22, height: '50%' }}>
                             <View style={{ flexDirection: "column", marginBottom: 22 }}>
                                 <Text style={{ color: '#1F1F1F', fontSize: 14, fontWeight: '500' }}>Kontaktinfo</Text>
 
@@ -360,11 +388,11 @@ const QuickContactModal = ({ modal, setModal }: { modal: boolean, setModal: (mod
                                 { errorMessages.kreis !== "" && <Text style={{ color: '#FF0000', fontSize: 14, fontWeight: '400', marginTop: 4 }}>{errorMessages.kreis}</Text>}
 
                             </View>
-                        </ScrollView>
+                        </ScrollView1>
                     </View>
                 </View>
             </View>
-        </Modal>
+        </BottomSheetModal>
     )
 }
 

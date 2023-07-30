@@ -1,41 +1,59 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState, useRef, useEffect } from 'react'
-import { Modal, View, Text, Pressable, PanResponder, StyleSheet, Platform, TouchableOpacity, ScrollView, Button, KeyboardAvoidingView } from 'react-native'
-import DropDownPicker from 'react-native-dropdown-picker';
-import { TextInput } from 'react-native-paper';
-import { Path, Svg, SvgXml } from 'react-native-svg';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import IOSDateModal from './IOSDateModal';
-import { Audio } from 'expo-av';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+  PanResponder,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+  ScrollView,
+  Button,
+  KeyboardAvoidingView,
+  useWindowDimensions
+} from "react-native";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-
+import DropDownPicker from "react-native-dropdown-picker";
+import { TextInput } from "react-native-paper";
+import { Path, Svg, SvgXml } from "react-native-svg";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
+import IOSDateModal from "./IOSDateModal";
+import { Audio } from "expo-av";
 
 const searchIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8.20111 15.3967C12.1782 15.3967 15.4022 12.1739 15.4022 8.19837C15.4022 4.22282 12.1782 1 8.20111 1C4.22405 1 1 4.22282 1 8.19837C1 12.1739 4.22405 15.3967 8.20111 15.3967Z" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M14.546 15.9493C14.9701 17.2294 15.9383 17.3574 16.6824 16.2373C17.3625 15.2132 16.9144 14.3731 15.6822 14.3731C14.7701 14.3651 14.258 15.0772 14.546 15.9493Z" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-
 const titleIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M16.5 7.5V11.25C16.5 15 15 16.5 11.25 16.5H6.75C3 16.5 1.5 15 1.5 11.25V6.75C1.5 3 3 1.5 6.75 1.5H10.5" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M16.5 7.5H13.5C11.25 7.5 10.5 6.75 10.5 4.5V1.5L16.5 7.5Z" stroke="#4675F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
+</svg>`;
 
 const micIcon = `<svg width="17" height="22" viewBox="0 0 17 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8.5 13.75C10.3675 13.75 11.875 12.2425 11.875 10.375V3.625C11.875 1.7575 10.3675 0.25 8.5 0.25C6.6325 0.25 5.125 1.7575 5.125 3.625V10.375C5.125 12.2425 6.6325 13.75 8.5 13.75Z" fill="white"/>
 <path d="M14.125 10.375C14.125 13.48 11.605 16 8.5 16C5.395 16 2.875 13.48 2.875 10.375H0.625C0.625 14.3463 3.56125 17.6087 7.375 18.16V21.625H9.625V18.16C13.4388 17.6087 16.375 14.3463 16.375 10.375H14.125Z" fill="white"/>
-</svg>`
+</svg>`;
 
 const playIcon = `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M13 0.5C6.1 0.5 0.5 6.1 0.5 13C0.5 19.9 6.1 25.5 13 25.5C19.9 25.5 25.5 19.9 25.5 13C25.5 6.1 19.9 0.5 13 0.5ZM13 23C7.4875 23 3 18.5125 3 13C3 7.4875 7.4875 3 13 3C18.5125 3 23 7.4875 23 13C23 18.5125 18.5125 23 13 23ZM9.875 18.625L18.625 13L9.875 7.375V18.625Z" fill="#3C58F7"/>
-</svg>`
+</svg>`;
 
-const pause =`<svg width="361" height="361" viewBox="0 0 361 361" fill="none" xmlns="http://www.w3.org/2000/svg">
+const pause = `<svg width="361" height="361" viewBox="0 0 361 361" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M53.221 53.221C-17.073 123.515 -17.072 237.485 53.221 307.779C123.514 378.073 237.486 378.073 307.78 307.779C378.073 237.486 378.073 123.514 307.78 53.221C237.485 -17.073 123.514 -17.072 53.221 53.221ZM282.323 282.324C226.088 338.553 134.912 338.555 78.677 282.324C22.441 226.089 22.442 134.911 78.677 78.677C134.913 22.441 226.088 22.442 282.324 78.676C338.559 134.913 338.559 226.088 282.323 282.324Z" fill="#3C58F7"/>
 <path d="M149 99.5C153.971 99.5 158 103.529 158 108.5V252.5C158 257.471 153.971 261.5 149 261.5H122C117.029 261.5 113 257.471 113 252.5V108.5C113 103.529 117.029 99.5 122 99.5H149Z" fill="#3C58F7"/>
 <path d="M239 99.5C243.971 99.5 248 103.529 248 108.5V252.5C248 257.471 243.971 261.5 239 261.5H212C207.029 261.5 203 257.471 203 252.5V108.5C203 103.529 207.029 99.5 212 99.5H239Z" fill="#3C58F7"/>
 </svg>
-`
+`;
 const bar = `<svg width="236" height="25" viewBox="0 0 236 25" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_203_877)">
 <path d="M135 18H137V6H135V18ZM139 22H141V2H139V22ZM131 14H133V10H131V14ZM143 18H145V6H143V18ZM147 10V14H149V10H147Z" fill="black"/>
@@ -84,266 +102,356 @@ const bar = `<svg width="236" height="25" viewBox="0 0 236 25" fill="none" xmlns
 <rect width="24" height="24" fill="white" transform="translate(191)"/>
 </clipPath>
 </defs>
-</svg>`
+</svg>`;
 
 const closeIcon = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M18.6281 3.82422C19.3442 3.0918 19.3442 1.90234 18.6281 1.16992C17.9119 0.4375 16.7489 0.4375 16.0328 1.16992L9.99994 7.3457L3.9614 1.17578C3.24526 0.443359 2.08223 0.443359 1.36609 1.17578C0.649943 1.9082 0.649943 3.09766 1.36609 3.83008L7.40463 10L1.37182 16.1758C0.655672 16.9082 0.655672 18.0977 1.37182 18.8301C2.08796 19.5625 3.25098 19.5625 3.96713 18.8301L9.99994 12.6543L16.0385 18.8242C16.7546 19.5566 17.9177 19.5566 18.6338 18.8242C19.3499 18.0918 19.3499 16.9023 18.6338 16.1699L12.5953 10L18.6281 3.82422Z" fill="#E3E6E4"/>
-</svg>`
+</svg>`;
 
 interface Data {
-    name: string;
-    email: string;
+  name: string;
+  email: string;
+}
+const dataArray: Data[] = [
+  { name: "Ben Fisher", email: "ben.fisher@mailing.com" },
+  { name: "Annette Black", email: "annette.black@appxelent.com" },
+  { name: "Albert Flores", email: "albert.flores@google.com" },
+  { name: "Bessie Cooper", email: "bessie.cooper@finance-ab.com" },
+  { name: "Brooklyn Simmons", email: "brooklyn.simmons@netsome.com" },
+  { name: "Courtney Henry", email: "courtney.henry@example.com" },
+  { name: "Arlene McCoy", email: "arlene.mccoy@ingen.com" },
+];
+
+const colorCombinations = [
+  ["#3C58F7", "#34DCFC"],
+  ["#D73C3C", "#34DCFC"],
+  ["#3CF770", "#34DCFC"],
+  ["#F7A13C", "#34DCFC"],
+];
+
+const QuickApproachModal = ({
+  modal,
+  setModal,
+}: {
+  modal: boolean;
+  setModal: (modal: boolean) => void;
+}) => {
+  const activityRef = useRef(null);
+  const [title, setTitle] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [letter, setLetter] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [recording, setRecording] = useState<any>();
+  const [recordings, setRecordings] = useState<any[]>([]);
+  const [IsRecording, SetIsRecording] = useState<boolean>(false);
+  const [IsPLaying, SetIsPLaying] = useState<number>(-1);
+  const [errorMessage, setErrorMessage] = useState({
+    title: "",
+    description: "",
+  });
+  const [filteredData, setFilteredData] = useState<Data[]>([]);
+
+  const AudioPlayer = useRef(new Audio.Sound());
+
+  // const panResponder = useRef(
+  //   PanResponder.create({
+  //     onStartShouldSetPanResponder: () => true,
+  //     onPanResponderRelease: (e, gestureState) => {
+  //       if (gestureState.dy > 50) {
+  //         // Close the modal when swiped down by more than 50 pixels
+  //         closeModal();
+  //       }
+  //     },
+  //   })
+  // ).current;
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const snapPoints = ["100%", "100%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setModal(true);
+    }, 100);
   }
-  const dataArray: Data[] = [
-    { name: "Ben Fisher", email: "ben.fisher@mailing.com" },
-    { name: "Annette Black", email: "annette.black@appxelent.com" },
-    { name: "Albert Flores", email: "albert.flores@google.com" },
-    { name: "Bessie Cooper", email: "bessie.cooper@finance-ab.com" },
-    { name: "Brooklyn Simmons", email: "brooklyn.simmons@netsome.com" },
-    { name: "Courtney Henry", email: "courtney.henry@example.com" },
-    { name: "Arlene McCoy", email: "arlene.mccoy@ingen.com" },
-  ];
+
+  if (modal) {    
+    handlePresentModal(); 
+  }
+  const closeModal = () => {
+    // Call the function to close the modal
+    setModal(false);
+  };
+
+  const handleAdd = () => {
+    if (title === "") {
+      setErrorMessage({ title: "Title is required", description: "" });
+      return;
+    }
+    if (description === "") {
+      setErrorMessage({ title: "", description: "Description is required" });
+      return;
+    }
+
+    setErrorMessage({ title: "", description: "" });
+    setModal(false);
+  };
+
+  // Function to start recording
+  const StartRecording = async () => {
+    try {
+      console.log("Requesting permissions..");
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log("Starting recording..");
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      SetIsRecording(true);
+      console.log("Recording started");
+    } catch (err) {
+      console.error("Failed to start recording", err);
+    }
+  };
+
+  // Function to stop recording
+  const StopRecording = async () => {
+    console.log("Stopping recording..");
+    setRecording(undefined);
+    await recording.stopAndUnloadAsync();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    });
+    const uri = recording.getURI();
+
+    if (uri) {
+      // Remove the recording from the array
+      setRecordings((prevRecordings) => [...prevRecordings, recording]);
+    }
+    SetIsRecording(false);
+  };
+
+  // Function to play the recorded audio
+  const PlayRecording = async (recording: any, index: number) => {
+    try {
+      // Load the recording URI
+      await AudioPlayer.current.loadAsync(
+        { uri: recording.getURI() },
+        {},
+        true
+      );
+
+      // Get player status
+      const playerStatus = await AudioPlayer.current.getStatusAsync();
+
+      // Play if the recording is loaded successfully
+      if (playerStatus.isLoaded && !playerStatus.isPlaying) {
+        AudioPlayer.current.playAsync();
+        SetIsPLaying(index);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const StopPlaying = async () => {
+    try {
+      // Get player status
+      const playerStatus = await AudioPlayer.current.getStatusAsync();
+
+      // If recording is playing, stop it
+      if (playerStatus.isLoaded) {
+        await AudioPlayer.current.unloadAsync();
+      }
+
+      SetIsPLaying(-1);
+    } catch (error) {}
+  };
+
+  const handlePlaybackStatusUpdate = async (status: any) => {
+    if (status.didJustFinish) {
+      // Unload the sound after it finishes playing
+      await AudioPlayer.current.unloadAsync();
+      SetIsPLaying(-1);
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for playback status update
+    AudioPlayer.current.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
+  }, []);
+
+  const handlePlay = async (index: number, recording: any) => {
+    if (IsPLaying !== -1 && IsPLaying !== index) {
+      await StopPlaying();
+    }
+    if (IsPLaying === index) {
+      await StopPlaying();
+    } else {
+      await PlayRecording(recording, index);
+    }
+  };
+
+  const handleDelete = async (index: number) => {
+    const newRecordings = recordings.filter((recording, i) => i !== index);
+    setRecordings(newRecordings);
+  };
+
+  const createLetter = (name: string) => {
+    const namesArray = name.split(" ");
+    const firstName = namesArray[0] || "";
+    const lastName = namesArray[1] || "";
+    return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
+  };
+
+  const getRandomColors = () => {
+    const randomIndex = Math.floor(Math.random() * colorCombinations.length);
+    return colorCombinations[randomIndex];
+  };
+  const handleSearch = (query: string) => {
+    setSearch(query);
+    const filteredContacts = sortedArray.filter((contact) =>
+      contact.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredData(filteredContacts);
+  };
+
+  useEffect(() => {
+    handleSearch(search);
+  }, [search]);
+  const sortedArray = dataArray.sort((a, b) => a.name.localeCompare(b.name));
+
+  return (
   
-  const colorCombinations = [
-    ["#3C58F7", "#34DCFC"],
-    ["#D73C3C", "#34DCFC"],
-    ["#3CF770", "#34DCFC"],
-    ["#F7A13C", "#34DCFC"],
-  ];
 
-const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (modal: boolean) => void }) => {
-    const activityRef = useRef(null);
-    const [title, setTitle] = useState<string>("")
-    const [search, setSearch] = useState<string>("")
-    const [name, setName] = useState<string>("")
-    const [letter, setLetter] = useState<string>("")
-    const [email, setEmail] = useState<string>("")
-    const [description, setDescription] = useState<string>("")
-    const [recording, setRecording] = useState<any>();
-    const [recordings, setRecordings] = useState<any[]>([]);
-    const [IsRecording, SetIsRecording] = useState<boolean>(false);
-    const [IsPLaying, SetIsPLaying] = useState<number>(-1);
-    const [errorMessage, setErrorMessage] = useState({ title : "", description: "" });
-    const [filteredData, setFilteredData] = useState<Data[]>([]);
+    <BottomSheetModal
 
-    const AudioPlayer = useRef(new Audio.Sound());
+    ref={bottomSheetModalRef}
+    handleIndicatorStyle={{ display: "none" }}
+    snapPoints={snapPoints}
+    backgroundStyle={{
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+    }}
+    onDismiss={() => setModal(false)}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.centeredView}
+      >
+        <View ref={activityRef} style={styles.modalView}>
+          {/* Top Line */}
+          <View
+            style={{
+              width: 54,
+              height: 6,
+              backgroundColor: "#D9D9D9",
+              borderRadius: 30,
+            }}
+           // {...panResponder.panHandlers}
+          ></View>
 
-    const panResponder = useRef(
-        PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
-            onPanResponderRelease: (e, gestureState) => {
-                if (gestureState.dy > 50) {
-                    // Close the modal when swiped down by more than 50 pixels
-                    closeModal();
-                }
-            },
-        })
-    ).current;
+          {/*  editable */}
+          <View
+            style={{
+              width: "100%",
+              minHeight: 40,
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 11,
+              flexDirection: "row",
+            }}
+           // {...panResponder.panHandlers}
+          >
+            <TouchableOpacity
+              onPress={()=>{    bottomSheetModalRef.current?.close()
+                setModal(false)
+              }}
+              style={{ paddingHorizontal: 20 }}
+            >
+              <Text
+                style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}
+              >
+                Abbrechen
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleAdd}
+              style={{
+                backgroundColor: "#3C58F7",
+                borderRadius: 30,
+                paddingHorizontal: 8,
+                paddingVertical: 6,
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: "500", color: "white" }}>
+                Speichern
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-    const closeModal = () => {
-        // Call the function to close the modal
-        setModal(false);
-    };
+          {/* Seach Bar */}
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              paddingHorizontal: 24,
+              marginTop: 20,
+            }}
+            //{...panResponder.panHandlers}
+          >
+            <TextInput
+              style={{ backgroundColor: "#ffffff", width: "100%" }}
+              theme={{ roundness: 9 }}
+              label=""
+              placeholder={"Kontakt suchen"}
+              value={search}
+              activeOutlineColor="none"
+              outlineColor="#949F99"
+              mode="outlined"
+              onChangeText={setSearch}
+              left={
+                <TextInput.Icon
+                  icon={() => (
+                    <SvgXml
+                      xml={searchIcon}
+                      width={18}
+                      height={18}
+                      style={{ alignSelf: "center" }}
+                    />
+                  )}
+                />
+              }
+            />
+          </View>
 
-    const handleAdd = () => {
-        if (title === "") {
-            setErrorMessage({ title: "Title is required", description: "" })
-            return;
-        }
-        if (description === "") {
-            setErrorMessage({ title: "", description: "Description is required" })
-            return;
-        }
-
-        setErrorMessage({ title: "", description: "" })
-        setModal(false);
-    };
-
-    // Function to start recording
-    const StartRecording = async () => {
-        try {
-            console.log('Requesting permissions..');
-            await Audio.requestPermissionsAsync();
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: true,
-                playsInSilentModeIOS: true,
-            });
-
-            console.log('Starting recording..');
-            const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY
-            );
-            setRecording(recording);
-            SetIsRecording(true);
-            console.log('Recording started');
-        } catch (err) {
-            console.error('Failed to start recording', err);
-        }
-    };
-
-    // Function to stop recording
-    const StopRecording = async () => {
-        console.log('Stopping recording..');
-        setRecording(undefined);
-        await recording.stopAndUnloadAsync();
-        await Audio.setAudioModeAsync(
-            {
-                allowsRecordingIOS: false,
-            }
-        );
-        const uri = recording.getURI();
-
-        if (uri) {
-            // Remove the recording from the array
-            setRecordings((prevRecordings) => [...prevRecordings, recording]);
-        }
-        SetIsRecording(false);
-    };
-
-    // Function to play the recorded audio
-    const PlayRecording = async (recording: any, index: number) => {
-        try {
-            // Load the recording URI
-            await AudioPlayer.current.loadAsync({ uri: recording.getURI() }, {}, true);
-
-            // Get player status
-            const playerStatus = await AudioPlayer.current.getStatusAsync();
-
-
-            // Play if the recording is loaded successfully
-            if (playerStatus.isLoaded && !playerStatus.isPlaying) {
-                AudioPlayer.current.playAsync();
-                SetIsPLaying(index);
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const StopPlaying = async () => {
-        try {
-            // Get player status
-            const playerStatus = await AudioPlayer.current.getStatusAsync();
-
-            // If recording is playing, stop it
-            if (playerStatus.isLoaded) {
-                await AudioPlayer.current.unloadAsync();
-            }
-
-            SetIsPLaying(-1);
-        } catch (error) { }
-    };
-
-    const handlePlaybackStatusUpdate = async (status: any) => {
-        if (status.didJustFinish) {
-            // Unload the sound after it finishes playing
-            await AudioPlayer.current.unloadAsync();
-            SetIsPLaying(-1);
-        }
-    };
-
-    useEffect(() => {
-        // Add event listener for playback status update
-        AudioPlayer.current.setOnPlaybackStatusUpdate(handlePlaybackStatusUpdate);
-    }, []);
-
-    const handlePlay = async (index: number, recording: any) => {
-        if (IsPLaying !== -1 && IsPLaying !== index) {
-            await StopPlaying();
-        }
-        if (IsPLaying === index) {
-            await StopPlaying();
-        } else {
-            await PlayRecording(recording, index);
-        }
-    }
-
-    const handleDelete = async (index: number) => {
-        const newRecordings = recordings.filter((recording, i) => i !== index);
-        setRecordings(newRecordings);
-    }
-
-
-    const createLetter = (name: string) => {
-        const namesArray = name.split(" ");
-        const firstName = namesArray[0] || "";
-        const lastName = namesArray[1] || "";
-        return firstName.charAt(0).toUpperCase() + lastName.charAt(0).toUpperCase();
-      };
-    
-      const getRandomColors = () => {
-        const randomIndex = Math.floor(Math.random() * colorCombinations.length);
-        return colorCombinations[randomIndex];
-      };
-      const handleSearch = (query: string) => {
-        setSearch(query);
-        const filteredContacts = sortedArray.filter((contact) =>
-          contact.name.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilteredData(filteredContacts);
-      };
-    
-      useEffect(() => {
-        handleSearch(search);
-      }, [search]);
-      const sortedArray = dataArray.sort((a, b) => a.name.localeCompare(b.name));
-    
-    return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modal}
-            onRequestClose={() => setModal(!modal)}>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
-
-                <View ref={activityRef} style={styles.modalView}>
-                    {/* Top Line */}
-                    <View style={{ width: 54, height: 6, backgroundColor: "#D9D9D9", borderRadius: 30 }} {...panResponder.panHandlers}></View>
-
-                    {/*  editable */}
-                    <View style={{ width: '100%', minHeight: 40, alignItems: 'center', justifyContent: "space-between", paddingHorizontal: 11, flexDirection: "row" }} {...panResponder.panHandlers}>
-                        <TouchableOpacity onPress={closeModal} style={{ paddingHorizontal: 20 }}>
-                            <Text style={{ fontSize: 15, fontWeight: "500", color: "#818181" }}>Abbrechen</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleAdd} style={{ backgroundColor: "#3C58F7", borderRadius: 30, paddingHorizontal: 8, paddingVertical: 6 }}>
-                            <Text style={{ fontSize: 15, fontWeight: "500", color: "white" }}>Speichern</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Seach Bar */}
-                    <View style={{ width: '100%', flexDirection: "row", paddingHorizontal: 24, marginTop: 20 }} {...panResponder.panHandlers}>
-                        <TextInput 
-                            style={{ backgroundColor: '#ffffff', width: '100%' }}
-                            theme={{ roundness: 9 }}
-                            label=""
-                            placeholder={"Kontakt suchen"}
-                            value={search}
-                            activeOutlineColor='none'
-                            outlineColor='#949F99'
-                            mode='outlined'
-                            onChangeText={setSearch}
-                            left={
-
-                                <TextInput.Icon
-                                    icon={() => (
-                                        <SvgXml xml={searchIcon} width={18} height={18} style={{ alignSelf: 'center' }} />
-                                    )}
-                                />
-                            }
-                        />
-                    </View>
-
-
-                    <ScrollView style={{ flex: 1, width: '100%', flexDirection: 'column', paddingHorizontal: 24, marginTop: 16 }}>
-{search==="" && (<View>
-    {name !== "" && email !== "" && (
+          <ScrollView
+            style={{
+              flex: 1,
+              width: "100%",
+              flexDirection: "column",
+              paddingHorizontal: 24,
+              marginTop: 16,
+            }}
+          >
+            {search === "" && (
+              <View>
+                {name !== "" && email !== "" && (
                   <View
                     style={{
                       width: "100%",
                       flexDirection: "row",
                       marginBottom: 20,
                     }}
-                    {...panResponder.panHandlers}
+              //      {...panResponder.panHandlers}
                   >
                     <LinearGradient
                       colors={["#3C58F7", "#34DCFC"]}
@@ -388,75 +496,124 @@ const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (mo
                     </View>
                   </View>
                 )}
-     {/* title */}
-     <View style={{ width: "100%", marginTop: 10 }}>
-                            <Text style={styles.label}>Titel</Text>
-                            <TextInput
-                                style={{ backgroundColor: '#ffffff' }}
-                                theme={{ roundness: 9 }}
-                                label=""
-                                placeholder={"Enter Title"}
-                                value={title}
-                                activeOutlineColor='none'
-                                outlineColor='#949F99'
-                                mode='outlined'
-                                onChangeText={setTitle}
-                                right={
-                                    title ? (
-                                        <TextInput.Icon
-                                            icon={() => (
-                                                <SvgXml xml={titleIcon} width={18} height={18} style={{ alignSelf: 'center' }} />
-                                            )}
-                                        />
-                                    ) : null
-                                }
+                {/* title */}
+                <View style={{ width: "100%", marginTop: 10 }}>
+                  <Text style={styles.label}>Titel</Text>
+                  <TextInput
+                    style={{ backgroundColor: "#ffffff" }}
+                    theme={{ roundness: 9 }}
+                    label=""
+                    placeholder={"Enter Title"}
+                    value={title}
+                    activeOutlineColor="none"
+                    outlineColor="#949F99"
+                    mode="outlined"
+                    onChangeText={setTitle}
+                    right={
+                      title ? (
+                        <TextInput.Icon
+                          icon={() => (
+                            <SvgXml
+                              xml={titleIcon}
+                              width={18}
+                              height={18}
+                              style={{ alignSelf: "center" }}
                             />
-                            {errorMessage.title !== "" && <Text style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errorMessage.title}</Text>}
-                        </View>
+                          )}
+                        />
+                      ) : null
+                    }
+                  />
+                  {errorMessage.title !== "" && (
+                    <Text style={{ color: "red", fontSize: 12, marginTop: 4 }}>
+                      {errorMessage.title}
+                    </Text>
+                  )}
+                </View>
 
-                        {/* Beschreibung */}
-                        <View style={{ width: "100%", marginTop: 10 }}>
-                            <Text style={styles.label}>Text</Text>
-                            <TextInput
-                                style={{ backgroundColor: '#ffffff' }}
-                                theme={{ roundness: 9 }}
-                                label=""
-                                placeholder={"Enter Description"}
-                                value={description}
-                                activeOutlineColor='none'
-                                outlineColor='#949F99'
-                                mode='outlined'
-                                onChangeText={setDescription}
-                                multiline={true}
-                                numberOfLines={7}
-                            />
-                            {errorMessage.description !== "" && <Text style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errorMessage.description}</Text>}
-                        </View>
+                {/* Beschreibung */}
+                <View style={{ width: "100%", marginTop: 10 }}>
+                  <Text style={styles.label}>Text</Text>
+                  <TextInput
+                    style={{ backgroundColor: "#ffffff" }}
+                    theme={{ roundness: 9 }}
+                    label=""
+                    placeholder={"Enter Description"}
+                    value={description}
+                    activeOutlineColor="none"
+                    outlineColor="#949F99"
+                    mode="outlined"
+                    onChangeText={setDescription}
+                    multiline={true}
+                    numberOfLines={7}
+                  />
+                  {errorMessage.description !== "" && (
+                    <Text style={{ color: "red", fontSize: 12, marginTop: 4 }}>
+                      {errorMessage.description}
+                    </Text>
+                  )}
+                </View>
 
-                        <View style={{ width: "100%", marginTop: 28, flexDirection: 'column' }}>
+                <View
+                  style={{
+                    width: "100%",
+                    marginTop: 28,
+                    flexDirection: "column",
+                  }}
+                ></View>
+                {recordings.map((recording, index) => (
+                  <View
+                    style={{
+                      width: "100%",
+                      flexDirection: "row",
+                      marginTop: 8,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "90%",
+                        height: 45,
+                        borderWidth: 1,
+                        borderColor: "#949F99",
+                        borderRadius: 9,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        paddingHorizontal: 6,
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => handlePlay(index, recording)}
+                        activeOpacity={0.5}
+                      >
+                        <SvgXml
+                          xml={IsPLaying === index ? pause : playIcon}
+                          width={26}
+                          height={26}
+                        />
+                      </TouchableOpacity>
+                      <SvgXml
+                        xml={bar}
+                        height={25}
+                        style={{ marginLeft: 10 }}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => handleDelete(index)}
+                      style={{
+                        height: 45,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginLeft: 10,
+                      }}
+                    >
+                      <SvgXml xml={closeIcon} width={18} height={18} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
 
-
-                        </View>
-                        {recordings.map((recording, index) => (
-                            <View style={{ width: "100%", flexDirection: 'row', marginTop: 8 }}>
-                                <View style={{ width: "90%", height: 45, borderWidth: 1, borderColor: "#949F99", borderRadius: 9, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6 }}>
-                                    <TouchableOpacity
-                                        onPress={() => handlePlay(index, recording)}
-                                        activeOpacity={0.5}>
-                                        <SvgXml xml={IsPLaying===index? pause :playIcon} width={26} height={26} />
-                                    </TouchableOpacity>
-                                    <SvgXml xml={bar} height={25} style={{ marginLeft: 10 }} />
-                                </View>
-                                <TouchableOpacity onPress={() => handleDelete(index)} style={{ height: 45, alignItems: 'center', justifyContent: 'center', marginLeft: 10 }}>
-                                    <SvgXml xml={closeIcon} width={18} height={18} />
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-
-</View>)}
-
-
-{search !== "" &&
+            {search !== "" &&
               filteredData.map(({ name, email }) => {
                 const [startColor, endColor] = getRandomColors();
                 return (
@@ -503,94 +660,117 @@ const QuickApproachModal = ({ modal, setModal }: { modal: boolean, setModal: (mo
                   </TouchableOpacity>
                 );
               })}
-                       
-                    </ScrollView>
-                    <View style={{ width: "100%", paddingHorizontal: 24, alignItems: 'center' }}>
-                        <TouchableOpacity
-                            style={{ width: "100%", backgroundColor: IsRecording ? "#FF0000" : "#4675F7", flexDirection: "row", height: 54, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 20 }}
-                            onPress={IsRecording ? StopRecording : StartRecording}
-                            accessibilityLabel="Learn more about this purple button">
-                            <SvgXml xml={micIcon} width={17} height={22} />
-                            <Text style={{ color: "white", fontSize: 18, fontWeight: "600", marginLeft: 12 }}>{IsRecording ? "Aufnehmen" : "Aufnahme starten"}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </KeyboardAvoidingView>
-
-        </Modal>
-    )
-}
+          </ScrollView>
+          <View
+            style={{
+              width: "100%",
+              paddingHorizontal: 24,
+              alignItems: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: "100%",
+                backgroundColor: IsRecording ? "#FF0000" : "#4675F7",
+                flexDirection: "row",
+                height: 54,
+                borderRadius: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+              onPress={IsRecording ? StopRecording : StartRecording}
+              accessibilityLabel="Learn more about this purple button"
+            >
+              <SvgXml xml={micIcon} width={17} height={22} />
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "600",
+                  marginLeft: 12,
+                }}
+              >
+                {IsRecording ? "Aufnehmen" : "Aufnahme starten"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </BottomSheetModal>
+    
+  );
+};
 
 const styles = StyleSheet.create({
-
-    centeredView: {
-        width: '100%',
-        height: '100%',
-        flex: 1,
-        justifyContent: 'flex-end',
-        marginTop: Platform.OS === "ios" ? 65 : 35,
-
+  centeredView: {
+    width: "100%",
+    height: "100%",
+    flex: 1,
+    justifyContent: "flex-end",
+    marginTop: Platform.OS === "ios" ? 65 : 35,
+  },
+  modalView: {
+    width: "100%",
+    height: Platform.OS === "ios" ? "94%" : "100%",
+    backgroundColor: "#FDFDFD",
+    borderRadius: 15,
+    paddingTop: 8,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    modalView: {
-        width: '100%',
-        height: Platform.OS === 'ios' ? '94%' : '100%',
-        backgroundColor: '#FDFDFD',
-        borderRadius: 15,
-        paddingTop: 8,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-    },
-    buttonOpen: {
-        backgroundColor: '#F194FF',
-    },
-    buttonClose: {
-        backgroundColor: '#2196F3',
-    },
-    textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    gradient: {
-        width: 76,
-        height: 76,
-        borderRadius: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    label: {
-        color: '#383838',
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    gradient1: {
-        width: 46,
-        height: 46,
-        borderRadius: 100,
-        justifyContent: "center",
-        alignItems: "center",
-      },
-      card: {
-        flexDirection: "row",
-        width: "100%",
-        marginBottom: 20,
-      },
-})
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  gradient: {
+    width: 76,
+    height: 76,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    color: "#383838",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  gradient1: {
+    width: 46,
+    height: 46,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    flexDirection: "row",
+    width: "100%",
+    marginBottom: 20,
+  },
+});
 
 export default QuickApproachModal;

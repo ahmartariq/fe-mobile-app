@@ -5,9 +5,15 @@ import { store } from "./store";
 import { Provider } from 'react-redux';
 import 'react-native-gesture-handler';
 import { Provider as PaperProvider , MD3LightTheme as DefaultTheme } from 'react-native-paper';
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 const App = () => {
   return (
+    <GestureHandlerRootView style={{flex:1}}>
+      <BottomSheetModalProvider>
+
     <Provider store={store}>
       <PaperProvider>
         <NavigationContainer>
@@ -16,6 +22,8 @@ const App = () => {
         </NavigationContainer>
       </PaperProvider>
     </Provider>
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 
