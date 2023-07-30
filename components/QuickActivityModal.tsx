@@ -919,12 +919,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     justifyContent: "flex-end",
-    marginTop: Platform.OS === "ios" ? 65 : 35,
+    marginTop: Platform.OS === "ios" ? 20 : 35,
 
   },
   modalView: {
     width: "100%",
-    height: Platform.OS === "ios" ? "94%" : "100%",
+    height: Platform.OS === "ios" ? "100%" : "100%",
     backgroundColor: "#FDFDFD",
     borderRadius: 15,
     paddingTop: 8,
