@@ -245,6 +245,8 @@ const ContactModal = ({
   }, [contactModel]);
 
   useEffect(() => {
+    setEditable(false)
+    setSelected(0)
     if (data.name !== "") {
       const namesArray = data.name.split(" ");
       const firstName = namesArray[0];
